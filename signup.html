@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090909">
+<title>H4X ALTAF | Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ===== 4 COLOR THEMES ===== */
+:root {
+    --red:#ff2020; --red-glow:rgba(255, 32, 32, 0.4); --dark-red:#850000;
+    --bg:#090909; --card:#141414; --border:#302020; --muted:#999;
+}
+body.theme-red    { --red:#ff2525; --red-glow:rgba(255,37,37,0.4); --dark-red:#850000; }
+body.theme-blue   { --red:#00d2ff; --red-glow:rgba(0,210,255,0.4); --dark-red:#005f7a; }
+body.theme-green  { --red:#00ff88; --red-glow:rgba(0,255,136,0.4); --dark-red:#007a40; }
+body.theme-purple { --red:#b800ff; --red-glow:rgba(184,0,255,0.4); --dark-red:#5c0080; }
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-height:100vh; overflow-x:hidden; display:flex; flex-direction:column; }
+
+/* ===== ALL EDGES FIRE ANIMATION ===== */
+#fire-layer { 
+    position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; 
+    background: radial-gradient(circle at center, transparent 40%, rgba(255, 0, 0, 0.05) 100%);
+}
+.fire { position: absolute; background: linear-gradient(to top, #ff0000, #ff4500, #ff8c00, transparent); border-radius: 50% 50% 0 0; box-shadow: 0 0 15px #ff0000; animation: fireAnim linear infinite; }
+.fire.bottom { bottom: -20px; border-radius: 50% 50% 0 0; animation-name: fireUp; }
+.fire.top { top: -20px; border-radius: 0 0 50% 50%; background: linear-gradient(to bottom, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireDown; }
+.fire.left { left: -20px; border-radius: 0 50% 50% 0; background: linear-gradient(to right, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireRight; }
+.fire.right { right: -20px; border-radius: 50% 0 0 50%; background: linear-gradient(to left, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireLeft; }
+@keyframes fireUp { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+@keyframes fireDown { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(100vh) scale(1.5); opacity: 0; } }
+@keyframes fireRight { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(100vw) scale(1.5); opacity: 0; } }
+@keyframes fireLeft { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(-100vw) scale(1.5); opacity: 0; } }
+
+/* NAVBAR */
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid var(--border); background: rgba(8,8,8,0.8); backdrop-filter: blur(10px); position: relative; z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-logo { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--red); box-shadow: 0 0 15px var(--red-glow); }
+.brand-text { font: 900 18px Orbitron; color: white; }
+.brand-text span { color: var(--red); }
+.brand-text small { display: block; font: 700 8px Inter; color: #777; letter-spacing: 3px; margin-top: 3px; }
+
+.color-switcher{ display:flex; gap:8px; background:#150a0a; padding:6px 10px; border-radius:20px; border:1px solid #3a1515; }
+.color-btn{ width:16px; height:16px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform .2s,border-color .2s; }
+.color-btn:hover{ transform:scale(1.2); }
+.color-btn.active{ border-color:#fff; transform:scale(1.1); box-shadow:0 0 10px currentColor; }
+.color-btn.red{ background:#ff2525; color:#ff2525; }
+.color-btn.blue{ background:#00d2ff; color:#00d2ff; }
+.color-btn.green{ background:#00ff88; color:#00ff88; }
+.color-btn.purple{ background:#b800ff; color:#b800ff; }
+
+/* SIGNUP BOX */
+.signup-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 30px 20px; position: relative; z-index: 10; }
+.signup-box { width: 100%; max-width: 420px; background: rgba(18,12,12,0.85); backdrop-filter: blur(20px); border: 1px solid var(--red-glow); border-radius: 18px; padding: 35px 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px var(--red-glow); animation: appear 0.6s ease; }
+@keyframes appear { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:none} }
+
+.signup-box h2 { text-align: center; font: 800 24px Orbitron; margin-bottom: 10px; }
+.signup-box h2 span { color: var(--red); }
+.signup-box p { text-align: center; color: #888; font-size: 11px; margin-bottom: 25px; }
+
+.field { margin-bottom: 18px; }
+.field label { display: block; color: #bbb; font-size: 10px; font-weight: 700; margin-bottom: 8px; }
+.field input { width: 100%; height: 45px; padding: 0 15px; background: rgba(9,9,9,0.8); border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 12px; outline: none; transition: 0.3s; }
+.field input:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-glow); }
+
+.terms-check { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #888; margin-bottom: 20px; }
+.terms-check input { accent-color: var(--red); width: 14px; height: 14px; cursor: pointer; }
+
+.submit-btn { width: 100%; height: 48px; border: none; border-radius: 8px; background: linear-gradient(110deg, var(--red), var(--dark-red)); color: white; font-weight: 900; font-size: 12px; letter-spacing: 1px; cursor: pointer; box-shadow: 0 5px 20px var(--red-glow); transition: 0.3s; }
+.submit-btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+
+.login-link { text-align: center; font-size: 11px; color: #888; margin-top: 20px; }
+.login-link a { color: var(--red); text-decoration: none; font-weight: bold; }
+
+.msg { display: none; padding: 12px; border-radius: 8px; font-size: 11px; text-align: center; margin-bottom: 15px; }
+.msg.error { display: block; background: rgba(255,0,0,0.1); color: #ff7777; border: 1px solid #792020; }
+.msg.success { display: block; background: rgba(0,255,0,0.1); color: #7dff9c; border: 1px solid #205a32; }
+
+/* MUSIC BUTTON */
+.music-toggle{ position:fixed; bottom:25px; right:25px; z-index:1000; width:55px; height:55px; border-radius:50%; background:linear-gradient(135deg,#1a0505,#0a0202); border:1px solid var(--red-glow); color:var(--red); font-size:24px; display:grid; place-items:center; cursor:pointer; box-shadow:0 0 15px var(--red-glow); }
+
+@media(max-width: 480px) {
+    .signup-box { padding: 25px 20px; }
+    .navbar { padding: 15px 4%; }
+}
+</style>
+</head>
+<body class="theme-red">
+
+<div id="fire-layer"></div>
+
+<nav class="navbar">
+    <a href="index.html" class="brand">
+        <img src="https://i.postimg.cc/C5tfyH1H/file-00000000ba30820b8f4a7075c4fd3a41.png" alt="Logo" class="brand-logo">
+        <div class="brand-text">H4X <span>ALTAF</span><small>HOSTING PLATFORM</small></div>
+    </a>
+    <div class="color-switcher">
+        <div class="color-btn red active" onclick="changeTheme('theme-red', this)"></div>
+        <div class="color-btn blue" onclick="changeTheme('theme-blue', this)"></div>
+        <div class="color-btn green" onclick="changeTheme('theme-green', this)"></div>
+        <div class="color-btn purple" onclick="changeTheme('theme-purple', this)"></div>
+    </div>
+</nav>
+
+<div class="signup-container">
+    <div class="signup-box">
+        <h2>CREATE <span>ACCOUNT</span></h2>
+        <p>Join H4X ALTAF hosting platform</p>
+
+        <div id="message" class="msg"></div>
+
+        <form onsubmit="handleSignup(event)">
+            <div class="field">
+                <label>FULL NAME</label>
+                <input type="text" id="sName" required placeholder="John Doe">
+            </div>
+            <div class="field">
+                <label>EMAIL ADDRESS</label>
+                <input type="email" id="sEmail" required placeholder="example@mail.com">
+            </div>
+            <div class="field">
+                <label>PASSWORD</label>
+                <input type="password" id="sPassword" required placeholder="Create a strong password">
+            </div>
+            <div class="field">
+                <label>CONFIRM PASSWORD</label>
+                <input type="password" id="sConfirm" required placeholder="Confirm your password">
+            </div>
+            
+            <label class="terms-check">
+                <input type="checkbox" id="sTerms" required>
+                I agree to the Terms & Conditions
+            </label>
+
+            <button type="submit" class="submit-btn">REGISTER NOW →</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="index.html">Login here</a>
+        </div>
+    </div>
+</div>
+
+<script>
+/* THEME */
+function changeTheme(themeClass, btnElement) {
+    document.body.className = themeClass;
+    document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+    localStorage.setItem('h4x_theme', themeClass);
+}
+(function() {
+    const savedTheme = localStorage.getItem('h4x_theme');
+    if(savedTheme) {
+        document.body.className = savedTheme;
+        const colorName = savedTheme.replace('theme-', '');
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            if(btn.classList.contains(colorName)) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+})();
+
+/* FIRE ANIMATION */
+(function(){
+    const layer = document.getElementById("fire-layer");
+    const maxFlames = window.innerWidth < 600 ? 30 : 60;
+    function createFlame() {
+        if(layer.childElementCount > maxFlames) return;
+        const flame = document.createElement("div");
+        flame.className = "fire";
+        const edges = ["bottom", "top", "left", "right"];
+        const edge = edges[Math.floor(Math.random() * edges.length)];
+        flame.classList.add(edge);
+        const size = Math.random() * 15 + 10; 
+        const duration = Math.random() * 2 + 1.5;
+        const delay = Math.random() * 2;
+        if (edge === "bottom" || edge === "top") {
+            flame.style.width = size + "px"; flame.style.height = (size * 1.5) + "px"; flame.style.left = (Math.random() * 100) + "vw";
+        } else {
+            flame.style.width = (size * 1.5) + "px"; flame.style.height = size + "px"; flame.style.top = (Math.random() * 100) + "vh";
+        }
+        flame.style.animationDuration = duration + "s"; flame.style.animationDelay = delay + "s";
+        layer.appendChild(flame);
+        setTimeout(() => flame.remove(), (duration + delay) * 1000 + 500);
+    }
+    for(let i=0; i<maxFlames; i++) { createFlame(); }
+    setInterval(() => { if(!document.hidden) createFlame(); }, 150);
+})();
+
+/* SIGNUP LOGIC */
+function handleSignup(e) {
+    e.preventDefault();
+    
+    let name = document.getElementById("sName").value;
+    let email = document.getElementById("sEmail").value;
+    let pass = document.getElementById("sPassword").value;
+    let confirm = document.getElementById("sConfirm").value;
+    let msg = document.getElementById("message");
+
+    // Check passwords match
+    if (pass !== confirm) {
+        msg.className = "msg error";
+        msg.innerText = "Passwords do not match!";
+        return;
+    }
+
+    // Save user to LocalStorage
+    let user = { 
+        name: name, 
+        email: email, 
+        password: pass, 
+        coins: 0 // Naye user ko 0 coins
+    };
+    
+    localStorage.setItem("h4x_user", JSON.stringify(user));
+
+    msg.className = "msg success";
+    msg.innerText = "Account created successfully! Redirecting to login...";
+
+    // Redirect to login page after 2 seconds
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 2000);
+}
+</script>
+</body>
+</html>

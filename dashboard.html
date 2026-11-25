@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090909">
+<title>H4X ALTAF | Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ===== 4 COLOR THEMES ===== */
+:root {
+    --red:#ff2020; --red-glow:rgba(255, 32, 32, 0.4); --dark-red:#850000;
+    --bg:#090909; --card:#141414; --border:#302020; --muted:#999;
+}
+body.theme-red    { --red:#ff2525; --red-glow:rgba(255,37,37,0.4); --dark-red:#850000; }
+body.theme-blue   { --red:#00d2ff; --red-glow:rgba(0,210,255,0.4); --dark-red:#005f7a; }
+body.theme-green  { --red:#00ff88; --red-glow:rgba(0,255,136,0.4); --dark-red:#007a40; }
+body.theme-purple { --red:#b800ff; --red-glow:rgba(184,0,255,0.4); --dark-red:#5c0080; }
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ===== ALL EDGES FIRE ANIMATION ===== */
+#fire-layer { 
+    position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; 
+    background: radial-gradient(circle at center, transparent 40%, rgba(255, 0, 0, 0.05) 100%);
+}
+.fire {
+    position: absolute;
+    background: linear-gradient(to top, #ff0000, #ff4500, #ff8c00, transparent);
+    border-radius: 50% 50% 0 0;
+    box-shadow: 0 0 15px #ff0000;
+    animation: fireAnim linear infinite;
+}
+.fire.bottom { bottom: -20px; border-radius: 50% 50% 0 0; animation-name: fireUp; }
+.fire.top { top: -20px; border-radius: 0 0 50% 50%; background: linear-gradient(to bottom, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireDown; }
+.fire.left { left: -20px; border-radius: 0 50% 50% 0; background: linear-gradient(to right, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireRight; }
+.fire.right { right: -20px; border-radius: 50% 0 0 50%; background: linear-gradient(to left, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireLeft; }
+@keyframes fireUp { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 0.6; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+@keyframes fireDown { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 0.6; } 100% { transform: translateY(100vh) scale(1.5); opacity: 0; } }
+@keyframes fireRight { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 0.6; } 100% { transform: translateX(100vw) scale(1.5); opacity: 0; } }
+@keyframes fireLeft { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 0.6; } 100% { transform: translateX(-100vw) scale(1.5); opacity: 0; } }
+
+/* LOADER */
+.loader{ position:fixed; inset:0; background:#080808; z-index:9999; display:grid; place-items:center; animation:hideLoader .5s ease 1.3s forwards; }
+.loader h2{ font:900 25px Orbitron; letter-spacing:3px; text-shadow:0 0 20px var(--red); }
+.loader h2 span{ color:var(--red); }
+.loader div{ height:3px; width:170px; background:#420000; margin:20px auto; overflow:hidden; }
+.loader div:after{ content:""; display:block; width:40%; height:100%; background:var(--red); animation:loading 1s infinite; }
+@keyframes loading{ to{transform:translateX(450%)} }
+@keyframes hideLoader{ to{opacity:0;visibility:hidden;pointer-events:none} }
+
+.layout{ display:flex; min-height:100vh; }
+.sidebar{ position:fixed; left:0; top:0; width:250px; height:100vh; background:#101010ee; backdrop-filter:blur(15px); border-right:1px solid var(--border); padding:25px 17px; z-index:100; display:flex; flex-direction:column; transition:.3s; }
+.logo{ display:flex; align-items:center; gap:12px; padding:10px; margin-bottom:28px; letter-spacing:1px; }
+.logo-img{ width:44px; height:44px; border-radius:12px; object-fit:cover; box-shadow:0 0 20px var(--red-glow); border:1px solid var(--red); transition:.3s; }
+.logo-text{ font:900 21px Orbitron; }
+.logo-text span{ color:var(--red); text-shadow:0 0 15px var(--red); transition:color 0.5s; }
+.logo-text small{ display:block; font:700 9px Inter; letter-spacing:4px; color:#777; margin-top:8px; }
+.menu-title{ color:#666; font-size:9px; font-weight:800; letter-spacing:2px; padding:10px; margin-top:12px; }
+.nav-item{ display:flex; align-items:center; gap:13px; padding:13px; margin:4px 0; border-radius:9px; color:#aaa; text-decoration:none; font-size:12px; font-weight:600; border:1px solid transparent; transition:.25s; cursor:pointer; }
+.nav-item:hover{ background:#290909; color:white; border-color:#651515; transform:translateX(4px); }
+.nav-item.active{ background:linear-gradient(110deg,var(--dark-red),#200000); color:white; border-color:var(--red); box-shadow:0 5px 20px var(--red-glow); transition: background 0.5s, border-color 0.5s; }
+.nav-icon{ width:21px; text-align:center; font-size:17px; }
+.sidebar-bottom{ margin-top:auto; background:#210909; border:1px solid #591414; border-radius:12px; padding:15px; }
+.sidebar-bottom b{ color:var(--red); font-size:11px; }
+.sidebar-bottom p{ color:#999; font-size:10px; line-height:1.6; margin-top:7px; }
+
+.main{ margin-left:250px; width:calc(100% - 250px); padding:25px 32px; max-width:1700px; animation:appear .6s ease; }
+@keyframes appear{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+.topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+.top-left{ display:flex; align-items:center; gap:13px; }
+.welcome h2{ font-size:23px; font-weight:800; }
+.welcome h2 span{ color:var(--red); transition:color 0.5s; }
+.welcome p{ color:var(--muted); font-size:11px; margin-top:7px; }
+.top-right{ display:flex; align-items:center; gap:12px; }
+.menu-toggle, .notification{ background:#171010; border:1px solid var(--border); color:white; width:42px; height:42px; border-radius:10px; font-size:19px; cursor:pointer; }
+.menu-toggle{ display:none; }
+.notification{ position:relative; }
+.notification:after{ content:""; position:absolute; width:7px; height:7px; background:var(--red); border-radius:50%; top:8px; right:8px; box-shadow:0 0 10px var(--red); }
+
+/* COLOR SWITCHER (4 COLORS ONLY) */
+.color-switcher{ display:flex; gap:8px; background:#150a0a; padding:6px 10px; border-radius:20px; border:1px solid #3a1515; margin-right: 5px; }
+.color-btn{ width:16px; height:16px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform .2s,border-color .2s; }
+.color-btn:hover{ transform:scale(1.2); }
+.color-btn.active{ border-color:#fff; transform:scale(1.1); box-shadow:0 0 10px currentColor; }
+.color-btn.red{ background:#ff2525; color:#ff2525; }
+.color-btn.blue{ background:#00d2ff; color:#00d2ff; }
+.color-btn.green{ background:#00ff88; color:#00ff88; }
+.color-btn.purple{ background:#b800ff; color:#b800ff; }
+
+.profile{ display:flex; align-items:center; gap:10px; background:#171010; border:1px solid var(--border); border-radius:11px; padding:7px 12px; }
+.avatar{ width:35px; height:35px; display:grid; place-items:center; border-radius:9px; background:linear-gradient(135deg,var(--red),var(--dark-red)); font:900 14px Orbitron; transition: background 0.5s; }
+.profile-info b{ font-size:11px; }
+.profile-info p{ color:#777; font-size:9px; margin-top:4px; }
+
+.banner{ position:relative; overflow:hidden; border:1px solid var(--red-glow); border-radius:16px; padding:30px; margin-bottom:28px; background:radial-gradient(circle at 85% 50%,var(--red-glow),transparent 30%), linear-gradient(110deg,var(--dark-red),#210000); animation:bannerGlow 4s ease-in-out infinite alternate; transition: background 0.5s, border-color 0.5s; }
+@keyframes bannerGlow{ from{box-shadow:0 5px 20px var(--red-glow)} to{box-shadow:0 5px 35px var(--red-glow)} }
+.banner:after{ content:"H4X"; position:absolute; right:30px; top:-20px; font:900 clamp(80px,13vw,150px) Orbitron; color:#ffffff0b; pointer-events:none; }
+.banner-content{ position:relative; z-index:1; }
+.banner-tag{ display:inline-block; background:#ffffff16; border:1px solid #ffffff22; border-radius:30px; padding:6px 11px; color:#fff; font-size:9px; font-weight:800; letter-spacing:2px; margin-bottom:15px; }
+.banner h2{ font:800 clamp(19px,3vw,25px) Orbitron; margin-bottom:11px; }
+.banner p{ color:#e6baba; font-size:11px; line-height:1.8; max-width:440px; }
+.primary-btn{ display:inline-block; margin-top:20px; padding:12px 19px; border:0; border-radius:8px; background:white; color:var(--dark-red); font-size:10px; font-weight:900; cursor:pointer; position:relative; overflow:hidden; transition:.3s; letter-spacing:.5px; }
+.primary-btn:hover{ transform:translateY(-3px); box-shadow:0 5px 15px rgba(255,255,255,0.3); }
+
+.section-heading{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.section-heading h3{ font-size:15px; font-weight:800; }
+.section-heading span{ color:#777; font-size:10px; }
+
+.stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px; }
+.stat-card{ position:relative; overflow:hidden; padding:19px; background:linear-gradient(145deg,#191313,#101010); border:1px solid var(--border); border-radius:13px; transition:.3s; }
+.stat-card:hover{ transform:translateY(-7px); border-color:var(--red); box-shadow:0 12px 30px var(--red-glow); }
+.stat-icon{ width:39px; height:39px; display:grid; place-items:center; background:linear-gradient(135deg,var(--dark-red),#210707); border:1px solid var(--red); border-radius:10px; font-size:18px; margin-bottom:17px; transition: background 0.5s; }
+.stat-card p{ color:#999; font-size:10px; }
+.stat-card h2{ font:700 23px Orbitron; margin:9px 0; }
+.stat-card small{ color:var(--red); font-size:9px; }
+
+.content-grid{ display:grid; grid-template-columns:1.6fr 1fr; gap:17px; }
+.panel{ background:#121212ee; border:1px solid var(--border); border-radius:13px; padding:20px; transition:.3s; }
+.panel:hover{ border-color:#542020; }
+.panel-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:19px; }
+.panel-header h3{ font-size:13px; font-weight:800; }
+.view-all{ color:var(--red); background:none; border:0; font-size:10px; font-weight:800; cursor:pointer; }
+.empty-state{ text-align:center; padding:28px 10px; }
+.empty-icon{ width:65px; height:65px; display:grid; place-items:center; margin:0 auto 16px; background:#280909; border:1px solid var(--red); border-radius:18px; color:var(--red); font-size:27px; animation:emptyFloat 3s ease-in-out infinite; transition: border-color 0.5s, color 0.5s; }
+@keyframes emptyFloat{ 50%{transform:translateY(-7px)} }
+.empty-state h3{ font-size:13px; }
+.empty-state p{ color:#888; font-size:10px; line-height:1.8; max-width:300px; margin:9px auto 0; }
+.upload-btn{ border:1px solid var(--red); background:linear-gradient(100deg,var(--dark-red),#210000); color:white; border-radius:8px; padding:12px 19px; margin-top:19px; font-size:10px; font-weight:800; cursor:pointer; transition:.3s; }
+.upload-btn:hover{ transform:translateY(-3px); box-shadow:0 5px 15px var(--red-glow); }
+
+.activity-item{ display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid #252020; }
+.activity-item:last-child{ border:0; }
+.activity-icon{ width:35px; height:35px; display:grid; place-items:center; background:#290909; border-radius:9px; font-size:15px; }
+.activity-info b{ font-size:10px; }
+.activity-info p{ font-size:9px; color:#777; margin-top:5px; }
+.status{ margin-left:auto; color:#777; font-size:9px; }
+.status.online{ color:#22c55e; }
+
+/* ===== MUSIC OVERLAY & ROUND BUTTON ===== */
+.music-toggle{
+    position:fixed; bottom:25px; right:25px; z-index:1000;
+    width:55px; height:55px; border-radius:50%;
+    background:linear-gradient(135deg,#1a0505,#0a0202);
+    border:1px solid var(--red-glow); color:var(--red); font-size:24px;
+    display:grid; place-items:center; cursor:pointer;
+    box-shadow:0 0 15px var(--red-glow);
+    transition:transform .3s,box-shadow .3s;
+    animation:musicPulse 2.5s ease-in-out infinite;
+}
+@keyframes musicPulse{ 0%,100%{box-shadow:0 0 15px var(--red-glow)} 50%{box-shadow:0 0 30px var(--red)} }
+.music-toggle:hover{ transform:scale(1.1); animation-play-state:paused; }
+.music-toggle.playing{ color:#fff; background:linear-gradient(135deg,var(--red),#3a0000); }
+
+.music-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);
+    z-index:1100; display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden; transition:opacity .3s,visibility .3s;
+}
+.music-overlay.open{ opacity:1; visibility:visible; }
+.music-card{
+    width:90%; max-width:380px; background:rgba(18,12,12,0.95);
+    border:1px solid var(--red-glow); border-radius:18px; padding:30px 25px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.8),0 0 40px var(--red-glow);
+    position:relative; transform:translateY(20px); transition:transform .3s;
+}
+.music-overlay.open .music-card{ transform:translateY(0); }
+.close-music{ position:absolute; top:15px; right:15px; background:none; border:none; color:#888; font-size:24px; cursor:pointer; transition:color .2s; }
+.close-music:hover{ color:var(--red); }
+.music-card h3{ text-align:center; font:800 16px Orbitron; margin-bottom:20px; color:var(--red); }
+.song-info{ text-align:center; padding:14px; background:rgba(0,0,0,0.4); border:1px solid #321818; border-radius:10px; margin-bottom:15px; }
+.song-info .now-playing{ font-size:8px; color:#888; letter-spacing:2px; font-weight:800; margin-bottom:6px; }
+.song-info .song-name{ font:800 15px Orbitron; color:var(--red); }
+.song-info .song-count{ font-size:9px; color:#777; margin-top:5px; }
+.player-controls{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:15px; }
+.ctrl-btn{ width:46px; height:46px; border-radius:50%; border:1px solid var(--red-glow); background:rgba(0,0,0,0.6); color:var(--red); font-size:18px; display:grid; place-items:center; cursor:pointer; transition:transform .2s,box-shadow .3s; }
+.ctrl-btn:hover{ transform:scale(1.1); box-shadow:0 0 20px var(--red-glow); }
+.ctrl-btn.play-pause{ width:58px; height:58px; background:linear-gradient(135deg,var(--red),#3a0000); color:white; box-shadow:0 5px 20px var(--red-glow); }
+.ctrl-btn.play-pause.playing{ animation:musicPulse 1s ease-in-out infinite; }
+.select-wrap{ position:relative; margin-bottom:14px; }
+.select-wrap select{ width:100%; height:44px; padding:0 36px 0 13px; background:rgba(9,9,9,0.8); border:1px solid #382020; border-radius:8px; color:white; font-size:11px; outline:none; cursor:pointer; appearance:none; -webkit-appearance:none; transition:border-color .25s; }
+.select-wrap select:focus{ border-color:var(--red); box-shadow:0 0 0 3px var(--red-glow); }
+.select-wrap select option{ background:#111; color:white; }
+.select-wrap::after{ content:"▼"; position:absolute; right:13px; top:50%; transform:translateY(-50%); color:var(--red); font-size:10px; pointer-events:none; }
+.volume-row{ display:flex; align-items:center; gap:10px; font-size:9px; color:#888; }
+.volume-row span{ font-weight:800; letter-spacing:1px; }
+.volume-row input[type=range]{ flex:1; height:4px; accent-color:var(--red); cursor:pointer; }
+
+.footer{ text-align:center; color:#555; font-size:9px; margin-top:35px; padding:20px; border-top:1px solid #251717; }
+.footer span{ color:var(--red); }
+
+@media(max-width:1050px){
+    .stats{ grid-template-columns:repeat(2,1fr); }
+    .content-grid{ grid-template-columns:1fr; }
+    .color-switcher { display: none; }
+}
+@media(max-width:700px){
+    .sidebar{ transform:translateX(-100%); }
+    .sidebar.open{ transform:translateX(0); box-shadow:15px 0 40px #0009; }
+    .main{ margin-left:0; width:100%; padding:19px 15px; }
+    .menu-toggle{ display:block; }
+    .profile-info{ display:none; }
+}
+</style>
+</head>
+
+<body class="theme-red">
+
+<!-- BACKGROUND FIRE LAYER -->
+<div id="fire-layer"></div>
+
+<audio id="bg-music" loop preload="auto"></audio>
+
+<!-- ROUND FLOATING MUSIC BUTTON -->
+<button class="music-toggle" id="musicToggle" aria-label="Toggle music player">🎵</button>
+
+<!-- MUSIC OVERLAY -->
+<div class="music-overlay" id="musicOverlay">
+    <div class="music-card">
+        <button class="close-music" id="closeMusic">✕</button>
+        <h3>PHONK PLAYER</h3>
+        <div class="song-info">
+            <div class="now-playing">NOW PLAYING</div>
+            <div class="song-name" id="songName">Phonk #1</div>
+            <div class="song-count" id="songCount">1 / 10</div>
+        </div>
+        <div class="player-controls">
+            <button class="ctrl-btn" id="prevBtn">⏮</button>
+            <button class="ctrl-btn play-pause" id="playBtn">▶</button>
+            <button class="ctrl-btn" id="nextBtn">⏭</button>
+        </div>
+        <div class="select-wrap">
+            <select id="songSelect"></select>
+        </div>
+        <div class="volume-row">
+            <span>VOL</span>
+            <input type="range" id="volume" min="0" max="100" value="35">
+        </div>
+    </div>
+</div>
+
+<div class="loader">
+    <div class="loader-content">
+        <h2>H4X <span>ALTAF</span></h2>
+        <div></div>
+    </div>
+</div>
+
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+    <div class="logo">
+        <img src="https://i.postimg.cc/C5tfyH1H/file-00000000ba30820b8f4a7075c4fd3a41.png" alt="Logo" class="logo-img">
+        <div class="logo-text">H4X <span>ALTAF</span><small>HOSTING PLATFORM</small></div>
+    </div>
+    <div class="menu-title">MAIN MENU</div>
+    <a href="dashboard.html" class="nav-item active"><span class="nav-icon">⌂</span> Dashboard</a>
+    <a href="my-hosting.html" class="nav-item"><span class="nav-icon">▣</span> My Hosting</a>
+    <a href="upload.html" class="nav-item"><span class="nav-icon">⇧</span> Upload Service</a>
+    <a href="buy-hosting.html" class="nav-item"><span class="nav-icon">◈</span> Buy Hosting</a>
+    <div class="menu-title">MY ACCOUNT</div>
+    <a href="balance.html" class="nav-item"><span class="nav-icon">₹</span> My Balance</a>
+    <a href="history.html" class="nav-item"><span class="nav-icon">◷</span> Transaction History</a>
+    <a href="profile.html" class="nav-item"><span class="nav-icon">♙</span> My Profile</a>
+    <div class="sidebar-bottom">
+        <b>⚡ H4X PREMIUM</b>
+        <p>Powerful hosting for your bots, websites and applications.</p>
+    </div>
+</aside>
+
+<main class="main">
+    <header class="topbar">
+        <div class="top-left">
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <div class="welcome">
+                <h2>Welcome, <span>H4X ALTAF</span></h2>
+                <p>Manage your hosting services from one place.</p>
+            </div>
+        </div>
+        <div class="top-right">
+            <div class="color-switcher">
+                <div class="color-btn red active" onclick="changeTheme('theme-red', this)"></div>
+                <div class="color-btn blue" onclick="changeTheme('theme-blue', this)"></div>
+                <div class="color-btn green" onclick="changeTheme('theme-green', this)"></div>
+                <div class="color-btn purple" onclick="changeTheme('theme-purple', this)"></div>
+            </div>
+            <button class="notification" onclick="alert('No new notifications.')">♧</button>
+            <div class="profile">
+                <div class="avatar">H</div>
+                <div class="profile-info">
+                    <b>H4X ALTAF</b>
+                    <p>USER ACCOUNT</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="banner">
+        <div class="banner-content">
+            <div class="banner-tag">✦ PREMIUM HOSTING PLATFORM</div>
+            <h2>WELCOME TO H4X ALTAF</h2>
+            <p>Your all-in-one hosting platform. Host Telegram bots, Python applications, HTML websites and more.</p>
+            <button class="primary-btn" onclick="location.href='buy-hosting.html'">EXPLORE HOSTING &nbsp; →</button>
+        </div>
+    </section>
+
+    <div class="section-heading">
+        <h3>Dashboard Overview</h3>
+        <span>YOUR ACCOUNT SUMMARY</span>
+    </div>
+
+    <section class="stats">
+        <div class="stat-card">
+            <div class="stat-icon">▣</div>
+            <p>Total Hosting</p>
+            <h2>00</h2>
+            <small>Active services</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⚡</div>
+            <p>Running Services</p>
+            <h2>00</h2>
+            <small>Currently running</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">₹</div>
+            <p>Wallet Balance</p>
+            <h2>₹0.00</h2>
+            <small>Available balance</small>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">◷</div>
+            <p>Total Spent</p>
+            <h2>₹0.00</h2>
+            <small>Lifetime spending</small>
+        </div>
+    </section>
+
+    <section class="content-grid">
+        <div class="panel">
+            <div class="panel-header">
+                <h3>My Hosting Services</h3>
+                <button class="view-all" onclick="location.href='my-hosting.html'">VIEW ALL →</button>
+            </div>
+            <div class="empty-state">
+                <div class="empty-icon">▣</div>
+                <h3>No Hosting Services Yet</h3>
+                <p>You haven't purchased any hosting service. Start hosting your applications today.</p>
+                <button class="upload-btn" onclick="location.href='buy-hosting.html'">+ BUY HOSTING</button>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Recent Activity</h3>
+                <button class="view-all" onclick="location.href='history.html'">HISTORY →</button>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">◈</div>
+                <div class="activity-info"><b>Account Created</b><p>Welcome to H4X ALTAF</p></div>
+                <span class="status online">● Done</span>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">₹</div>
+                <div class="activity-info"><b>Wallet Balance</b><p>No transactions yet</p></div>
+                <span class="status">—</span>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">⚡</div>
+                <div class="activity-info"><b>Hosting Status</b><p>No active hosting</p></div>
+                <span class="status">—</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        © 2026 <span>H4X ALTAF</span> — ALL RIGHTS RESERVED.
+    </footer>
+</main>
+</div>
+
+<script>
+/* ===== MENU & THEME ===== */
+function toggleMenu(){ document.getElementById("sidebar").classList.toggle("open"); }
+function changeTheme(themeClass, btnElement) {
+    document.body.className = themeClass;
+    document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+    localStorage.setItem('h4x_theme', themeClass);
+}
+(function() {
+    const savedTheme = localStorage.getItem('h4x_theme');
+    if(savedTheme) {
+        document.body.className = savedTheme;
+        const colorName = savedTheme.replace('theme-', '');
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            if(btn.classList.contains(colorName)) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+})();
+
+/* ===== ALL EDGES FIRE ANIMATION (FAST & SMOOTH) ===== */
+(function(){
+    const layer = document.getElementById("fire-layer");
+    const maxFlames = window.innerWidth < 600 ? 35 : 70;
+
+    function createFlame() {
+        if(layer.childElementCount > maxFlames) return;
+
+        const flame = document.createElement("div");
+        flame.className = "fire";
+
+        const edges = ["bottom", "top", "left", "right"];
+        const edge = edges[Math.floor(Math.random() * edges.length)];
+        flame.classList.add(edge);
+
+        const size = Math.random() * 15 + 10; 
+        const duration = Math.random() * 2 + 1.5;
+        const delay = Math.random() * 2;
+
+        if (edge === "bottom" || edge === "top") {
+            flame.style.width = size + "px";
+            flame.style.height = (size * 1.5) + "px";
+            flame.style.left = (Math.random() * 100) + "vw";
+        } else {
+            flame.style.width = (size * 1.5) + "px";
+            flame.style.height = size + "px";
+            flame.style.top = (Math.random() * 100) + "vh";
+        }
+
+        flame.style.animationDuration = duration + "s";
+        flame.style.animationDelay = delay + "s";
+
+        layer.appendChild(flame);
+        setTimeout(() => flame.remove(), (duration + delay) * 1000 + 500);
+    }
+
+    for(let i=0; i<maxFlames; i++) { createFlame(); }
+    setInterval(() => { if(!document.hidden) createFlame(); }, 150);
+})();
+
+/* ===== MUSIC SYSTEM (OVERLAY FIXED) ===== */
+const SONGS = [
+    { name: "Phonk #1",  src: "https://files.catbox.moe/wcv8va.mp3" },
+    { name: "Phonk #2",  src: "https://files.catbox.moe/5sp3v3.mp3" },
+    { name: "Phonk #3",  src: "https://files.catbox.moe/981mvb.mp3" },
+    { name: "Phonk #4",  src: "https://files.catbox.moe/84mvos.mp3" },
+    { name: "Phonk #5",  src: "https://files.catbox.moe/4sdgiv.mp3" },
+    { name: "Phonk #6",  src: "https://files.catbox.moe/zncvh2.mp3" },
+    { name: "Phonk #7",  src: "https://files.catbox.moe/f6ki5y.mp3" },
+    { name: "Phonk #8",  src: "https://files.catbox.moe/j4mof2.mp3" },
+    { name: "Phonk #9",  src: "https://files.catbox.moe/porhg5.mp3" },
+    { name: "Phonk #10", src: "https://files.catbox.moe/48inpt.mp3" }
+];
+
+const music = document.getElementById("bg-music");
+const playBtn = document.getElementById("playBtn");
+const songName = document.getElementById("songName");
+const songCount = document.getElementById("songCount");
+const select = document.getElementById("songSelect");
+const volume = document.getElementById("volume");
+const musicToggle = document.getElementById("musicToggle");
+const musicOverlay = document.getElementById("musicOverlay");
+
+let currentIndex = 0;
+
+SONGS.forEach((song, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = song.name;
+    select.appendChild(opt);
+});
+
+function loadSong(index, autoPlay=false){
+    currentIndex = (index + SONGS.length) % SONGS.length;
+    const song = SONGS[currentIndex];
+    music.src = song.src;
+    songName.textContent = song.name;
+    songCount.textContent = (currentIndex+1) + " / " + SONGS.length;
+    select.value = currentIndex;
+    
+    if(autoPlay){
+        music.play().then(()=>{
+            playBtn.textContent="⏸"; 
+            musicToggle.classList.add("playing");
+        }).catch(()=>{});
+    } else {
+        playBtn.textContent = "▶";
+        musicToggle.classList.remove("playing");
+    }
+}
+
+playBtn.addEventListener("click", () => {
+    if(!music.src) { loadSong(currentIndex, true); return; }
+    if(music.paused) {
+        music.play().then(()=>{
+            playBtn.textContent="⏸"; 
+            musicToggle.classList.add("playing");
+        }).catch(()=>{});
+    } else {
+        music.pause();
+        playBtn.textContent="▶"; 
+        musicToggle.classList.remove("playing");
+    }
+});
+
+document.getElementById("prevBtn").addEventListener("click", ()=>loadSong(currentIndex-1, true));
+document.getElementById("nextBtn").addEventListener("click", ()=>loadSong(currentIndex+1, true));
+select.addEventListener("change", ()=>loadSong(parseInt(select.value,10), true));
+music.addEventListener("ended", ()=>loadSong(currentIndex+1, true));
+volume.addEventListener("input", ()=>{ music.volume = volume.value / 100; });
+
+musicToggle.addEventListener("click", ()=>{
+    musicOverlay.classList.add("open");
+});
+document.getElementById("closeMusic").addEventListener("click", ()=>{
+    musicOverlay.classList.remove("open");
+});
+musicOverlay.addEventListener("click", (e)=>{
+    if(e.target === musicOverlay) {
+        musicOverlay.classList.remove("open");
+    }
+});
+
+window.addEventListener("load", () => {
+    loadSong(0, false);
+    music.volume = volume.value / 100;
+});
+</script>
+
+</body>
+</html>

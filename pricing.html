@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H4X ALTAF | Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ===== THEMES ===== */
+:root { --red:#ff2020; --red-glow:rgba(255, 32, 32, 0.4); --dark-red:#850000; --bg:#090909; --border:#302020; }
+body.theme-red    { --red:#ff2525; --red-glow:rgba(255,37,37,0.4); --dark-red:#850000; }
+body.theme-blue   { --red:#00d2ff; --red-glow:rgba(0,210,255,0.4); --dark-red:#005f7a; }
+body.theme-green  { --red:#00ff88; --red-glow:rgba(0,255,136,0.4); --dark-red:#007a40; }
+body.theme-purple { --red:#b800ff; --red-glow:rgba(184,0,255,0.4); --dark-red:#5c0080; }
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ===== FIRE ANIMATION ===== */
+#fire-layer { position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; }
+.fire { position: absolute; background: linear-gradient(to top, #ff0000, #ff4500, #ff8c00, transparent); border-radius: 50% 50% 0 0; box-shadow: 0 0 15px #ff0000; animation: fireAnim linear infinite; }
+.fire.bottom { bottom: -20px; border-radius: 50% 50% 0 0; animation-name: fireUp; }
+.fire.top { top: -20px; border-radius: 0 0 50% 50%; background: linear-gradient(to bottom, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireDown; }
+.fire.left { left: -20px; border-radius: 0 50% 50% 0; background: linear-gradient(to right, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireRight; }
+.fire.right { right: -20px; border-radius: 50% 0 0 50%; background: linear-gradient(to left, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireLeft; }
+@keyframes fireUp { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+@keyframes fireDown { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(100vh) scale(1.5); opacity: 0; } }
+@keyframes fireRight { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(100vw) scale(1.5); opacity: 0; } }
+@keyframes fireLeft { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(-100vw) scale(1.5); opacity: 0; } }
+
+/* NAVBAR */
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid var(--border); background: rgba(8,8,8,0.8); backdrop-filter: blur(10px); position: relative; z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-logo { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--red); box-shadow: 0 0 15px var(--red-glow); }
+.brand-text { font: 900 18px Orbitron; color: white; }
+.brand-text span { color: var(--red); }
+.back-btn { color: #aaa; text-decoration: none; font-size: 12px; font-weight: 700; border: 1px solid #452020; padding: 10px 15px; border-radius: 8px; transition: .3s; }
+.back-btn:hover { color: white; border-color: var(--red); }
+
+/* PRICING SECTION */
+.pricing-container { max-width: 1100px; margin: 50px auto; padding: 0 20px; position: relative; z-index: 10; }
+.pricing-header { text-align: center; margin-bottom: 50px; }
+.pricing-header h1 { font: 900 32px Orbitron; margin-bottom: 15px; }
+.pricing-header h1 span { color: var(--red); }
+.pricing-header p { color: #999; font-size: 13px; }
+
+.plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+.plan-card { background: rgba(18,12,12,0.85); border: 1px solid var(--border); border-radius: 16px; padding: 35px 25px; text-align: center; transition: 0.3s; position: relative; overflow: hidden; }
+.plan-card:hover { transform: translateY(-10px); border-color: var(--red); box-shadow: 0 15px 40px var(--red-glow); }
+.plan-card.popular { border-color: var(--red); box-shadow: 0 0 20px var(--red-glow); }
+.popular-tag { position: absolute; top: 15px; right: -30px; background: var(--red); color: white; font-size: 10px; font-weight: 900; padding: 5px 40px; transform: rotate(45deg); }
+
+.plan-name { font: 800 20px Orbitron; color: #ccc; margin-bottom: 15px; }
+.plan-price { font: 900 40px Orbitron; color: var(--red); margin-bottom: 5px; }
+.plan-price span { font-size: 16px; color: #777; }
+.plan-features { list-style: none; margin: 25px 0; text-align: left; }
+.plan-features li { color: #bbb; font-size: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.plan-features li::before { content: "✓"; color: var(--red); font-weight: bold; }
+
+.buy-btn { display: block; width: 100%; padding: 15px; border: none; border-radius: 8px; background: linear-gradient(110deg, var(--red), var(--dark-red)); color: white; font-weight: 900; font-size: 13px; text-decoration: none; transition: 0.3s; cursor: pointer; }
+.buy-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+
+/* MUSIC BUTTON */
+.music-toggle{ position:fixed; bottom:25px; right:25px; z-index:1000; width:55px; height:55px; border-radius:50%; background:linear-gradient(135deg,#1a0505,#0a0202); border:1px solid var(--red-glow); color:var(--red); font-size:24px; display:grid; place-items:center; cursor:pointer; box-shadow:0 0 15px var(--red-glow); }
+@media(max-width: 768px) { .pricing-header h1 { font-size: 26px; } }
+</style>
+</head>
+<body class="theme-red">
+
+<div id="fire-layer"></div>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="brand">
+        <img src="https://i.postimg.cc/C5tfyH1H/file-00000000ba30820b8f4a7075c4fd3a41.png" alt="Logo" class="brand-logo">
+        <div class="brand-text">H4X <span>ALTAF</span></div>
+    </a>
+    <a href="dashboard.html" class="back-btn">← BACK TO DASHBOARD</a>
+</nav>
+
+<div class="pricing-container">
+    <div class="pricing-header">
+        <h1>CHOOSE YOUR <span>PLAN</span></h1>
+        <p>Upgrade your hosting experience with premium features and more coins.</p>
+    </div>
+
+    <div class="plans-grid">
+        <!-- STARTER PLAN -->
+        <div class="plan-card">
+            <div class="plan-name">STARTER</div>
+            <div class="plan-price">₹49<span>/mo</span></div>
+            <ul class="plan-features">
+                <li>100 Coins Included</li>
+                <li>Host 1 Bot or Website</li>
+                <li>Basic Support</li>
+                <li>24/7 Uptime</li>
+            </ul>
+            <!-- Apna WhatsApp number yaha daalo -->
+            <a href="https://wa.me/919999999999?text=Hi,%20I%20want%20to%20buy%20Starter%20Plan" class="buy-btn" target="_blank">CONTACT TO BUY</a>
+        </div>
+
+        <!-- PRO PLAN (POPULAR) -->
+        <div class="plan-card popular">
+            <div class="popular-tag">POPULAR</div>
+            <div class="plan-name">PRO</div>
+            <div class="plan-price">₹149<span>/mo</span></div>
+            <ul class="plan-features">
+                <li>500 Coins Included</li>
+                <li>Host 5 Bots or Websites</li>
+                <li>Priority Support</li>
+                <li>Advanced Analytics</li>
+            </ul>
+            <!-- Apna WhatsApp number yaha daalo -->
+            <a href="https://wa.me/919999999999?text=Hi,%20I%20want%20to%20buy%20Pro%20Plan" class="buy-btn" target="_blank">CONTACT TO BUY</a>
+        </div>
+
+        <!-- UNLIMITED PLAN -->
+        <div class="plan-card">
+            <div class="plan-name">UNLIMITED</div>
+            <div class="plan-price">₹499<span>/mo</span></div>
+            <ul class="plan-features">
+                <li>2000 Coins Included</li>
+                <li>Unlimited Hosting</li>
+                <li>Dedicated Support</li>
+                <li>Custom Domain Setup</li>
+            </ul>
+            <!-- Apna WhatsApp number yaha daalo -->
+            <a href="https://wa.me/919999999999?text=Hi,%20I%20want%20to%20buy%20Unlimited%20Plan" class="buy-btn" target="_blank">CONTACT TO BUY</a>
+        </div>
+    </div>
+</div>
+
+<script>
+/* FIRE ANIMATION */
+(function(){
+    const layer = document.getElementById("fire-layer");
+    const maxFlames = window.innerWidth < 600 ? 30 : 60;
+    function createFlame() {
+        if(layer.childElementCount > maxFlames) return;
+        const flame = document.createElement("div");
+        flame.className = "fire";
+        const edges = ["bottom", "top", "left", "right"];
+        const edge = edges[Math.floor(Math.random() * edges.length)];
+        flame.classList.add(edge);
+        const size = Math.random() * 15 + 10; 
+        const duration = Math.random() * 2 + 1.5;
+        const delay = Math.random() * 2;
+        if (edge === "bottom" || edge === "top") {
+            flame.style.width = size + "px"; flame.style.height = (size * 1.5) + "px"; flame.style.left = (Math.random() * 100) + "vw";
+        } else {
+            flame.style.width = (size * 1.5) + "px"; flame.style.height = size + "px"; flame.style.top = (Math.random() * 100) + "vh";
+        }
+        flame.style.animationDuration = duration + "s"; flame.style.animationDelay = delay + "s";
+        layer.appendChild(flame);
+        setTimeout(() => flame.remove(), (duration + delay) * 1000 + 500);
+    }
+    for(let i=0; i<maxFlames; i++) { createFlame(); }
+    setInterval(() => { if(!document.hidden) createFlame(); }, 150);
+})();
+</script>
+</body>
+</html>

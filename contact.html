@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H4X ALTAF | Contact Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ===== THEMES ===== */
+:root { --red:#ff2020; --red-glow:rgba(255, 32, 32, 0.4); --dark-red:#850000; --bg:#090909; --border:#302020; }
+body.theme-red    { --red:#ff2525; --red-glow:rgba(255,37,37,0.4); --dark-red:#850000; }
+body.theme-blue   { --red:#00d2ff; --red-glow:rgba(0,210,255,0.4); --dark-red:#005f7a; }
+body.theme-green  { --red:#00ff88; --red-glow:rgba(0,255,136,0.4); --dark-red:#007a40; }
+body.theme-purple { --red:#b800ff; --red-glow:rgba(184,0,255,0.4); --dark-red:#5c0080; }
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ===== FIRE ANIMATION ===== */
+#fire-layer { position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; }
+.fire { position: absolute; background: linear-gradient(to top, #ff0000, #ff4500, #ff8c00, transparent); border-radius: 50% 50% 0 0; box-shadow: 0 0 15px #ff0000; animation: fireAnim linear infinite; }
+.fire.bottom { bottom: -20px; border-radius: 50% 50% 0 0; animation-name: fireUp; }
+.fire.top { top: -20px; border-radius: 0 0 50% 50%; background: linear-gradient(to bottom, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireDown; }
+.fire.left { left: -20px; border-radius: 0 50% 50% 0; background: linear-gradient(to right, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireRight; }
+.fire.right { right: -20px; border-radius: 50% 0 0 50%; background: linear-gradient(to left, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireLeft; }
+@keyframes fireUp { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+@keyframes fireDown { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(100vh) scale(1.5); opacity: 0; } }
+@keyframes fireRight { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(100vw) scale(1.5); opacity: 0; } }
+@keyframes fireLeft { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(-100vw) scale(1.5); opacity: 0; } }
+
+/* NAVBAR */
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid var(--border); background: rgba(8,8,8,0.8); backdrop-filter: blur(10px); position: relative; z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-logo { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--red); box-shadow: 0 0 15px var(--red-glow); }
+.brand-text { font: 900 18px Orbitron; color: white; }
+.brand-text span { color: var(--red); }
+.back-btn { color: #aaa; text-decoration: none; font-size: 12px; font-weight: 700; border: 1px solid #452020; padding: 10px 15px; border-radius: 8px; transition: .3s; }
+.back-btn:hover { color: white; border-color: var(--red); }
+
+/* CONTACT SECTION */
+.container { max-width: 1000px; margin: 40px auto; padding: 0 20px; position: relative; z-index: 10; }
+.page-title { font: 900 32px Orbitron; text-align: center; margin-bottom: 10px; }
+.page-title span { color: var(--red); }
+.page-subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 40px; }
+
+.contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
+
+/* INFO CARD */
+.info-card { background: rgba(18,12,12,0.85); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
+.info-card h3 { font: 800 18px Orbitron; margin-bottom: 20px; color: var(--red); }
+.info-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 25px; }
+.info-icon { width: 40px; height: 40px; background: rgba(255,37,37,0.1); border: 1px solid var(--red-glow); border-radius: 10px; display: grid; place-items: center; font-size: 18px; color: var(--red); flex-shrink: 0; }
+.info-text h4 { font-size: 12px; color: #aaa; margin-bottom: 5px; }
+.info-text p { font-size: 14px; font-weight: 600; }
+.info-text a { color: white; text-decoration: none; transition: 0.2s; }
+.info-text a:hover { color: var(--red); }
+
+.social-links { display: flex; gap: 10px; margin-top: 20px; }
+.social-btn { width: 45px; height: 45px; border-radius: 50%; background: #111; border: 1px solid var(--border); display: grid; place-items: center; color: white; text-decoration: none; font-size: 18px; transition: 0.3s; }
+.social-btn:hover { background: var(--red); border-color: var(--red); transform: translateY(-5px); box-shadow: 0 10px 20px var(--red-glow); }
+
+/* FORM CARD */
+.form-card { background: rgba(18,12,12,0.85); border: 1px solid var(--border); border-radius: 16px; padding: 30px; }
+.form-card h3 { font: 800 18px Orbitron; margin-bottom: 20px; }
+.field { margin-bottom: 20px; }
+.field label { display: block; font-size: 11px; font-weight: 700; color: #bbb; margin-bottom: 8px; }
+.field input, .field textarea { width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; color: white; font-family: inherit; font-size: 13px; outline: none; transition: 0.3s; }
+.field input:focus, .field textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-glow); }
+.field textarea { height: 120px; resize: none; }
+
+.submit-btn { width: 100%; padding: 15px; border: none; border-radius: 8px; background: linear-gradient(110deg, var(--red), var(--dark-red)); color: white; font-weight: 900; font-size: 13px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 20px var(--red-glow); }
+.submit-btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+
+/* MUSIC BUTTON */
+.music-toggle{ position:fixed; bottom:25px; right:25px; z-index:1000; width:55px; height:55px; border-radius:50%; background:linear-gradient(135deg,#1a0505,#0a0202); border:1px solid var(--red-glow); color:var(--red); font-size:24px; display:grid; place-items:center; cursor:pointer; box-shadow:0 0 15px var(--red-glow); }
+
+@media(max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 26px; }
+}
+</style>
+</head>
+<body class="theme-red">
+
+<div id="fire-layer"></div>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="brand">
+        <img src="https://i.postimg.cc/C5tfyH1H/file-00000000ba30820b8f4a7075c4fd3a41.png" alt="Logo" class="brand-logo">
+        <div class="brand-text">H4X <span>ALTAF</span></div>
+    </a>
+    <a href="dashboard.html" class="back-btn">← BACK</a>
+</nav>
+
+<div class="container">
+    <h1 class="page-title">GET IN <span>TOUCH</span></h1>
+    <p class="page-subtitle">We're here to help you 24/7. Reach out to us for any queries.</p>
+
+    <div class="contact-grid">
+        <!-- LEFT: INFO -->
+        <div class="info-card">
+            <h3>Contact Info</h3>
+            
+            <div class="info-item">
+                <div class="info-icon">📍</div>
+                <div class="info-text">
+                    <h4>Location</h4>
+                    <p>Mumbai, India</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">✉️</div>
+                <div class="info-text">
+                    <h4>Email Support</h4>
+                    <p><a href="mailto:support@h4xaltaf.com">support@h4xaltaf.com</a></p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">📞</div>
+                <div class="info-text">
+                    <h4>WhatsApp / Call</h4>
+                    <p><a href="https://wa.me/919999999999" target="_blank">+91 99999 99999</a></p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Follow Us</h3>
+            <div class="social-links">
+                <!-- Apne social media links yaha daalo -->
+                <a href="#" class="social-btn">✈️</a>
+                <a href="#" class="social-btn">📷</a>
+                <a href="#" class="social-btn">▶️</a>
+                <a href="#" class="social-btn">🐦</a>
+            </div>
+        </div>
+
+        <!-- RIGHT: FORM -->
+        <div class="form-card">
+            <h3>Send a Message</h3>
+            <form onsubmit="sendMessage(event)">
+                <div class="field">
+                    <label>YOUR NAME</label>
+                    <input type="text" id="cName" required placeholder="Enter your full name">
+                </div>
+                <div class="field">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" id="cEmail" required placeholder="Enter your email">
+                </div>
+                <div class="field">
+                    <label>SUBJECT</label>
+                    <input type="text" id="cSubject" required placeholder="What is this about?">
+                </div>
+                <div class="field">
+                    <label>YOUR MESSAGE</label>
+                    <textarea id="cMessage" required placeholder="Write your message here..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">SEND MESSAGE →</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ===== FIRE ANIMATION ===== */
+(function(){
+    const layer = document.getElementById("fire-layer");
+    const maxFlames = window.innerWidth < 600 ? 30 : 60;
+    function createFlame() {
+        if(layer.childElementCount > maxFlames) return;
+        const flame = document.createElement("div");
+        flame.className = "fire";
+        const edges = ["bottom", "top", "left", "right"];
+        const edge = edges[Math.floor(Math.random() * edges.length)];
+        flame.classList.add(edge);
+        const size = Math.random() * 15 + 10; 
+        const duration = Math.random() * 2 + 1.5;
+        const delay = Math.random() * 2;
+        if (edge === "bottom" || edge === "top") {
+            flame.style.width = size + "px"; flame.style.height = (size * 1.5) + "px"; flame.style.left = (Math.random() * 100) + "vw";
+        } else {
+            flame.style.width = (size * 1.5) + "px"; flame.style.height = size + "px"; flame.style.top = (Math.random() * 100) + "vh";
+        }
+        flame.style.animationDuration = duration + "s"; flame.style.animationDelay = delay + "s";
+        layer.appendChild(flame);
+        setTimeout(() => flame.remove(), (duration + delay) * 1000 + 500);
+    }
+    for(let i=0; i<maxFlames; i++) { createFlame(); }
+    setInterval(() => { if(!document.hidden) createFlame(); }, 150);
+})();
+
+/* ===== FORM SUBMIT LOGIC ===== */
+function sendMessage(e) {
+    e.preventDefault(); // Page reload hone se roko
+    
+    let name = document.getElementById("cName").value;
+    
+    // Button ka text change karo
+    let btn = document.querySelector(".submit-btn");
+    let oldText = btn.innerText;
+    btn.innerText = "SENDING...";
+    btn.disabled = true;
+
+    // 1.5 second ka fake delay (taki user ko lage bhej raha hai)
+    setTimeout(() => {
+        btn.innerText = "✅ MESSAGE SENT!";
+        btn.style.background = "#22c55e";
+        
+        // Form clear kar do
+        document.querySelector("form").reset();
+
+        // Wapas normal karo
+        setTimeout(() => {
+            btn.innerText = oldText;
+            btn.style.background = "linear-gradient(110deg, var(--red), var(--dark-red))";
+            btn.disabled = false;
+        }, 3000);
+    }, 1500);
+}
+</script>
+</body>
+</html>

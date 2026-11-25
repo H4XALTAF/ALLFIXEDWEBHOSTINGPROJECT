@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H4X ALTAF | FAQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ===== THEMES ===== */
+:root { --red:#ff2020; --red-glow:rgba(255, 32, 32, 0.4); --dark-red:#850000; --bg:#090909; --border:#302020; }
+body.theme-red    { --red:#ff2525; --red-glow:rgba(255,37,37,0.4); --dark-red:#850000; }
+body.theme-blue   { --red:#00d2ff; --red-glow:rgba(0,210,255,0.4); --dark-red:#005f7a; }
+body.theme-green  { --red:#00ff88; --red-glow:rgba(0,255,136,0.4); --dark-red:#007a40; }
+body.theme-purple { --red:#b800ff; --red-glow:rgba(184,0,255,0.4); --dark-red:#5c0080; }
+
+*{margin:0;padding:0;box-sizing:border-box}
+body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; min-height: 100vh; }
+a { text-decoration: none; color: inherit; }
+
+/* NAVBAR */
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid var(--border); background: rgba(8,8,8,0.8); backdrop-filter: blur(10px); position: relative; z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-logo { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--red); box-shadow: 0 0 15px var(--red-glow); object-fit: cover; }
+.brand-text { font: 900 18px Orbitron; color: white; }
+.brand-text span { color: var(--red); }
+.back-btn { color: #aaa; font-size: 12px; font-weight: 700; border: 1px solid #452020; padding: 10px 15px; border-radius: 8px; transition: .3s; }
+.back-btn:hover { color: white; border-color: var(--red); }
+.color-switcher{ display:flex; gap:8px; background:#150a0a; padding:6px 10px; border-radius:20px; border:1px solid #3a1515; }
+.color-btn{ width:16px; height:16px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:transform .2s,border-color .2s; }
+.color-btn:hover{ transform:scale(1.2); }
+.color-btn.active{ border-color:#fff; transform:scale(1.1); box-shadow:0 0 10px currentColor; }
+.color-btn.red{ background:#ff2525; color:#ff2525; }
+.color-btn.blue{ background:#00d2ff; color:#00d2ff; }
+.color-btn.green{ background:#00ff88; color:#00ff88; }
+.color-btn.purple{ background:#b800ff; color:#b800ff; }
+
+/* FIRE LAYER */
+#fire-layer { position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; }
+.fire { position: absolute; background: linear-gradient(to top, #ff0000, #ff4500, #ff8c00, transparent); border-radius: 50% 50% 0 0; box-shadow: 0 0 15px #ff0000; animation: fireAnim linear infinite; }
+.fire.bottom { bottom: -20px; border-radius: 50% 50% 0 0; animation-name: fireUp; }
+.fire.top { top: -20px; border-radius: 0 0 50% 50%; background: linear-gradient(to bottom, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireDown; }
+.fire.left { left: -20px; border-radius: 0 50% 50% 0; background: linear-gradient(to right, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireRight; }
+.fire.right { right: -20px; border-radius: 50% 0 0 50%; background: linear-gradient(to left, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireLeft; }
+@keyframes fireUp { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+@keyframes fireDown { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(100vh) scale(1.5); opacity: 0; } }
+@keyframes fireRight { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(100vw) scale(1.5); opacity: 0; } }
+@keyframes fireLeft { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(-100vw) scale(1.5); opacity: 0; } }
+
+/* CONTENT */
+.container { max-width: 800px; margin: 40px auto; padding: 0 20px; position: relative; z-index: 10; }
+.page-title { font: 900 28px Orbitron; text-align: center; margin-bottom: 10px; }
+.page-title span { color: var(--red); }
+.page-sub { text-align:center; color:#888; font-size:13px; margin-bottom:30px; }
+
+/* FAQ ACCORDION */
+.faq-item { background: rgba(18,12,12,0.85); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
+.faq-item:hover { border-color: var(--red); }
+.faq-question { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; font-size: 14px; }
+.faq-question .icon { color: var(--red); font-size: 20px; transition: transform 0.3s; }
+.faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: 0.3s ease-in-out; color: #aaa; font-size: 13px; line-height: 1.8; }
+
+/* Open State */
+.faq-item.active { border-color: var(--red); box-shadow: 0 5px 15px var(--red-glow); }
+.faq-item.active .faq-answer { padding: 0 20px 20px; max-height: 200px; }
+.faq-item.active .icon { transform: rotate(45deg); }
+
+.contact-prompt { text-align: center; margin-top: 40px; background: #111; padding: 30px; border-radius: 16px; border: 1px dashed #444; }
+.contact-prompt p { color: #aaa; font-size: 13px; margin-bottom: 15px; }
+.contact-btn { display: inline-block; background: var(--red); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; transition: 0.3s; }
+.contact-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px var(--red-glow); }
+</style>
+</head>
+<body class="theme-red">
+
+<div id="fire-layer"></div>
+
+<nav class="navbar">
+    <a href="dashboard.html" class="brand">
+        <img src="https://i.postimg.cc/C5tfyH1H/file-00000000ba30820b8f4a7075c4fd3a41.png" alt="Logo" class="brand-logo">
+        <div class="brand-text">H4X <span>ALTAF</span></div>
+    </a>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <div class="color-switcher">
+            <div class="color-btn red active" onclick="changeTheme('theme-red', this)"></div>
+            <div class="color-btn blue" onclick="changeTheme('theme-blue', this)"></div>
+            <div class="color-btn green" onclick="changeTheme('theme-green', this)"></div>
+            <div class="color-btn purple" onclick="changeTheme('theme-purple', this)"></div>
+        </div>
+        <a href="dashboard.html" class="back-btn">← BACK</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 class="page-title">FREQUENTLY <span>ASKED</span></h1>
+    <p class="page-sub">Yaha par aapke saare sawalo ke jawab milenge.</p>
+
+    <div class="faq-list">
+        <!-- FAQ 1 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <span>Mera bot kaise kaam karta hai?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                Aapko sirf apna <b>bot.py</b> file upload karna hai. Hamara server usko automatically run kar dega. Aap "My Hosting" page par jakar usko Start/Stop kar sakte hain.
+            </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <span>Coins kaha se milte hain?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                Aap <b>Pricing</b> page se coins khareed sakte hain. Ya fir Admin aapko Redeem Code de sakta hai, jise aap "My Coins" page par redeem kar sakte hain.
+            </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <span>Bot band (offline) ho gaya toh kya karein?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                Agar aapka bot offline ho jata hai, toh uske error logs check karein. Agar code me error hai, toh usko thik karke dobara upload karein. Agar server down hai, toh hum jaldi hi usko fix kar denge.
+            </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question">
+                <span>Kya main HTML website host kar sakta hu?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                Haan bilkul! Aap apni sari HTML, CSS, JS files ek <b>.zip</b> file me daal kar upload karein. Hamara server use automatically extract karke host kar dega.
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-prompt">
+        <p>Abhi bhi koi sawal hai? Hamein message karein!</p>
+        <a href="contact.html" class="contact-btn">CONTACT SUPPORT</a>
+    </div>
+</div>
+
+<script>
+    // Theme Switcher
+    function changeTheme(themeClass, btnElement) {
+        document.body.className = themeClass;
+        document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+        localStorage.setItem('h4x_theme', themeClass);
+    }
+    // Load theme
+    (function() {
+        const savedTheme = localStorage.getItem('h4x_theme');
+        if(savedTheme) {
+            document.body.className = savedTheme;
+            const colorName = savedTheme.replace('theme-', '');
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                if(btn.classList.contains(colorName)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+    })();
+
+    // Fire Animation
+    (function(){
+        const layer = document.getElementById("fire-layer");
+        const maxFlames = window.innerWidth < 600 ? 30 : 60;
+        function createFlame() {
+            if(layer.childElementCount > maxFlames) return;
+            const flame = document.createElement("div");
+            flame.className = "fire";
+            const edges = ["bottom", "top", "left", "right"];
+            const edge = edges[Math.floor(Math.random() * edges.length)];
+            flame.classList.add(edge);
+            const size = Math.random() * 15 + 10; 
+            const duration = Math.random() * 2 + 1.5;
+            const delay = Math.random() * 2;
+            if (edge === "bottom" || edge === "top") {
+                flame.style.width = size + "px"; flame.style.height = (size * 1.5) + "px"; flame.style.left = (Math.random() * 100) + "vw";
+            } else {
+                flame.style.width = (size * 1.5) + "px"; flame.style.height = size + "px"; flame.style.top = (Math.random() * 100) + "vh";
+            }
+            flame.style.animationDuration = duration + "s"; flame.style.animationDelay = delay + "s";
+            layer.appendChild(flame);
+            setTimeout(() => flame.remove(), (duration + delay) * 1000 + 500);
+        }
+        for(let i=0; i<maxFlames; i++) { createFlame(); }
+        setInterval(() => { if(!document.hidden) createFlame(); }, 150);
+    })();
+
+    // Accordion Logic
+    function toggleFaq(element) {
+        if(element.classList.contains('active')) {
+            element.classList.remove('active');
+        } else {
+            document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+    }
+</script>
+</body>
+</html>

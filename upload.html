@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H4X ALTAF | Upload Service</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* ===== UPLOAD PAGE SPECIFIC ===== */
+.container { max-width: 1000px; margin: 30px auto; padding: 0 20px; position: relative; z-index: 10; }
+.page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+.page-header h1 { font: 900 26px Orbitron; }
+.page-header h1 span { color: var(--red); }
+.page-header p { color: #888; font-size: 12px; margin-top: 5px; }
+
+/* UPLOAD AREA */
+.upload-area {
+    border: 2px dashed #444; border-radius: 16px; padding: 40px 20px; text-align: center;
+    background: rgba(18,12,12,0.5); transition: 0.3s; cursor: pointer; margin-bottom: 20px;
+}
+.upload-area:hover, .upload-area.dragover { border-color: var(--red); background: rgba(255,37,37,0.05); }
+.upload-icon { font-size: 40px; color: var(--red); margin-bottom: 15px; }
+.upload-area h3 { font: 800 18px Orbitron; margin-bottom: 10px; }
+.upload-area p { color: #888; font-size: 12px; }
+
+/* PROGRESS BAR */
+.progress-container { display: none; margin-top: 20px; background: #000; border: 1px solid #333; border-radius: 8px; padding: 15px; }
+.progress-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 10px; color: #ccc; }
+.progress-track { height: 8px; background: #222; border-radius: 4px; overflow: hidden; }
+.progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--dark-red), var(--red)); transition: width 0.1s; }
+
+/* HOSTED FILES LIST */
+.file-list { margin-top: 20px; }
+.file-item { 
+    display: flex; align-items: center; justify-content: space-between; 
+    background: #111; border: 1px solid #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; 
+}
+.file-info { display: flex; align-items: center; gap: 15px; }
+.file-icon { width: 40px; height: 40px; background: rgba(255,37,37,0.1); border-radius: 8px; display: grid; place-items: center; font-size: 20px; color: var(--red); }
+.file-details h4 { font-size: 13px; margin-bottom: 4px; }
+.file-details p { font-size: 11px; color: #666; }
+.status-badge { padding: 5px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-right: 10px; }
+.status-on { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid #22c55e; }
+.status-off { background: rgba(255,0,0,0.1); color: #ff5555; border: 1px solid #ff5555; }
+
+/* LIVE CONSOLE */
+.console-box { background: #000; border: 1px solid #333; border-radius: 10px; overflow: hidden; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+.console-header { background: #111; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
+.console-header h3 { font-size: 12px; font-family: monospace; color: #ccc; }
+.console-dots { display: flex; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27c93f; }
+.console-body { padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; color: #22c55e; height: 200px; overflow-y: auto; line-height: 1.6; }
+.console-body::-webkit-scrollbar { width: 6px; }
+.console-body::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+@media (max-width: 768px) {
+    .file-item { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .file-actions { width: 100%; display: flex; justify-content: space-between; }
+}
+</style>
+</head>
+<body class="theme-red">
+
+<div id="fire-layer"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="dashboard.html" class="brand">
+        <img src="https://i.postimg.cc/C5tfyH1H/file-00000000ba30820b8f4a7075c4fd3a41.png" alt="Logo" class="brand-logo">
+        <div class="brand-text">H4X <span>ALTAF</span></div>
+    </a>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <div class="color-switcher">
+            <div class="color-btn red active" onclick="changeTheme('theme-red', this)"></div>
+            <div class="color-btn blue" onclick="changeTheme('theme-blue', this)"></div>
+            <div class="color-btn green" onclick="changeTheme('theme-green', this)"></div>
+            <div class="color-btn purple" onclick="changeTheme('theme-purple', this)"></div>
+        </div>
+        <a href="dashboard.html" class="back-btn">← BACK</a>
+    </div>
+</nav>
+
+<div class="container">
+    
+    <div class="page-header">
+        <div>
+            <h1>Upload <span>Service</span></h1>
+            <p>Host your Python bots, scripts, or ZIP files instantly.</p>
+        </div>
+    </div>
+
+    <!-- DRAG & DROP AREA -->
+    <div class="upload-area" id="dropZone">
+        <div class="upload-icon">☁️</div>
+        <h3>Drag & Drop File Here</h3>
+        <p>or click to browse from device (Max: 50MB)</p>
+        <input type="file" id="fileInput" style="display: none;" accept=".py,.zip,.js,.html,.json">
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-container" id="progressBox">
+        <div class="progress-header">
+            <span id="progressFileName">file.py</span>
+            <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- HOSTED FILES LIST -->
+    <h3 style="font: 800 16px Orbitron; margin-top: 30px; margin-bottom: 15px;">Active Hostings</h3>
+    <div class="file-list" id="fileList">
+        <!-- Demo File Item (Jab tak user koi file upload nahi karta) -->
+        <div class="file-item" id="demoFile">
+            <div class="file-info">
+                <div class="file-icon">🐍</div>
+                <div class="file-details">
+                    <h4>demo_bot.py</h4>
+                    <p>Uploaded on: 25 Oct 2026 • 12 KB</p>
+                </div>
+            </div>
+            <div class="file-actions" style="display:flex; align-items:center;">
+                <span class="status-badge status-on">● Running</span>
+                <button style="background:#333; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11px; cursor:pointer;" onclick="alert('Demo file cannot be stopped.')">Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIVE CONSOLE -->
+    <h3 style="font: 800 16px Orbitron; margin-top: 30px; margin-bottom: 15px;">Live Console</h3>
+    <div class="console-box">
+        <div class="console-header">
+            <div class="console-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+            <h3>Terminal - H4X Server</h3>
+            <div style="width:40px;"></div>
+        </div>
+        <div class="console-body" id="consoleBody">
+            <!-- Logs will appear here -->
+            <div>> Server connected successfully.</div>
+            <div>> Waiting for files to host...</div>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const progressBox = document.getElementById('progressBox');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressFileName = document.getElementById('progressFileName');
+    const fileList = document.getElementById('fileList');
+    const consoleBody = document.getElementById('consoleBody');
+
+    // Click to upload
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Drag & Drop logic
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if(e.dataTransfer.files.length > 0) {
+            handleFileUpload(e.dataTransfer.files[0]);
+        }
+    });
+
+    // File Input Change
+    fileInput.addEventListener('change', () => {
+        if(fileInput.files.length > 0) {
+            handleFileUpload(fileInput.files[0]);
+        }
+    });
+
+    // Add log to console
+    function addLog(text, color = "#22c55e") {
+        const div = document.createElement('div');
+        div.style.color = color;
+        div.innerText = "> " + text;
+        consoleBody.appendChild(div);
+        consoleBody.scrollTop = consoleBody.scrollHeight; // Auto scroll to bottom
+    }
+
+    // Fake Upload Simulation
+    function handleFileUpload(file) {
+        // Check size (50MB max demo)
+        if(file.size > 50 * 1024 * 1024) {
+            alert("File is too large! Max size is 50MB.");
+            return;
+        }
+
+        // Show progress box
+        progressBox.style.display = 'block';
+        progressFileName.innerText = file.name;
+        progressBar.style.width = '0%';
+        progressPercent.innerText = '0%';
+
+        addLog(`Starting upload for: ${file.name}`, "#fff");
+
+        let progress = 0;
+        let interval = setInterval(() => {
+            progress += Math.random() * 15; // Random speed
+            if(progress > 100) progress = 100;
+
+            progressBar.style.width = progress + '%';
+            progressPercent.innerText = Math.floor(progress) + '%';
+
+            if(progress === 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    progressBox.style.display = 'none';
+                    addLog(`Upload complete: ${file.name}`, "#22c55e");
+                    addLog(`Compiling and starting process...`, "#eab308");
+                    
+                    setTimeout(() => {
+                        addLog(`Success! Hosting started. Process ID: #${Math.floor(Math.random()*9000)+1000}`, "#22c55e");
+                        addNewFileToList(file.name, (file.size / 1024).toFixed(1) + " KB");
+                    }, 1500);
+
+                }, 500);
+            }
+        }, 200);
+    }
+
+    // Add new file to active list
+    function addNewFileToList(fileName, fileSize) {
+        // Remove demo file if it exists
+        const demo = document.getElementById('demoFile');
+        if(demo) demo.remove();
+
+        // Get file extension
+        let ext = fileName.split('.').pop().toLowerCase();
+        let icon = ext === 'py' ? '🐍' : ext === 'zip' ? '📦' : '📄';
+
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.innerHTML = `
+            <div class="file-info">
+                <div class="file-icon">${icon}</div>
+                <div class="file-details">
+                    <h4>${fileName}</h4>
+                    <p>Just now • ${fileSize}</p>
+                </div>
+            </div>
+            <div class="file-actions" style="display:flex; align-items:center;">
+                <span class="status-badge status-on">● Running</span>
+                <button class="stop-btn" style="background:#ff2525; color:white; border:none; padding:6px 12px; border-radius:6px; font-size:11px; cursor:pointer;">Stop</button>
+            </div>
+        `;
+
+        // Stop button logic
+        div.querySelector('.stop-btn').addEventListener('click', function() {
+            let badge = div.querySelector('.status-badge');
+            if(badge.innerText.includes("Running")) {
+                badge.className = "status-badge status-off";
+                badge.innerText = "● Stopped";
+                this.innerText = "Start";
+                this.style.background = "#22c55e";
+                addLog(`Process stopped for: ${fileName}`, "#ff5555");
+            } else {
+                badge.className = "status-badge status-on";
+                badge.innerText = "● Running";
+                this.innerText = "Stop";
+                this.style.background = "#ff2525";
+                addLog(`Process restarted for: ${fileName}`, "#22c55e");
+            }
+        });
+
+        fileList.prepend(div);
+    }
+</script>
+</body>
+</html>

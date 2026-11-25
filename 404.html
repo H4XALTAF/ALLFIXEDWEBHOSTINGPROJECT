@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H4X ALTAF | 404 Error</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ===== THEMES ===== */
+:root { --red:#ff2020; --red-glow:rgba(255, 32, 32, 0.4); --dark-red:#850000; --bg:#050505; --border:#302020; }
+body.theme-red    { --red:#ff2525; --red-glow:rgba(255,37,37,0.4); --dark-red:#850000; }
+body.theme-blue   { --red:#00d2ff; --red-glow:rgba(0,210,255,0.4); --dark-red:#005f7a; }
+body.theme-green  { --red:#00ff88; --red-glow:rgba(0,255,136,0.4); --dark-red:#007a40; }
+body.theme-purple { --red:#b800ff; --red-glow:rgba(184,0,255,0.4); --dark-red:#5c0080; }
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-height:100vh; overflow-x:hidden; display:flex; flex-direction:column; }
+
+/* ===== BACKGROUND FIRE & EMBERS ===== */
+#fire-layer { 
+    position: fixed; inset: 0; z-index: -10; pointer-events: none; overflow: hidden; 
+    background: radial-gradient(circle at center, transparent 30%, rgba(255, 0, 0, 0.1) 100%);
+}
+.fire { position: absolute; background: linear-gradient(to top, #ff0000, #ff4500, #ff8c00, transparent); border-radius: 50% 50% 0 0; box-shadow: 0 0 20px #ff0000; animation: fireAnim linear infinite; }
+.fire.bottom { bottom: -20px; border-radius: 50% 50% 0 0; animation-name: fireUp; }
+.fire.left { left: -20px; border-radius: 0 50% 50% 0; background: linear-gradient(to right, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireRight; }
+.fire.right { right: -20px; border-radius: 50% 0 0 50%; background: linear-gradient(to left, #ff0000, #ff4500, #ff8c00, transparent); animation-name: fireLeft; }
+
+@keyframes fireUp { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+@keyframes fireRight { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(100vw) scale(1.5); opacity: 0; } }
+@keyframes fireLeft { 0% { transform: translateX(0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(-100vw) scale(1.5); opacity: 0; } }
+
+/* ===== 404 CONTAINER ===== */
+.error-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; position: relative; z-index: 10; }
+.glitch-wrapper { position: relative; margin-bottom: 20px; }
+.error-code { font: 900 120px Orbitron; color: white; text-shadow: 0 0 20px var(--red-glow); line-height: 1; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); text-shadow: 0 0 20px var(--red-glow); } 50% { transform: scale(1.05); text-shadow: 0 0 50px var(--red), 0 0 20px var(--red); } }
+
+/* Glitch Effect */
+.error-code::before, .error-code::after { content: '404'; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; }
+.error-code::before { left: 2px; text-shadow: -2px 0 #00d2ff; animation: glitch-anim 2s infinite linear alternate-reverse; }
+.error-code::after { left: -2px; text-shadow: -2px 0 var(--red); animation: glitch-anim2 3s infinite linear alternate-reverse; }
+@keyframes glitch-anim { 0% { clip-path: inset(20% 0 80% 0); } 20% { clip-path: inset(60% 0 10% 0); } 40% { clip-path: inset(40% 0 50% 0); } 60% { clip-path: inset(80% 0 5% 0); } 80% { clip-path: inset(10% 0 70% 0); } 100% { clip-path: inset(30% 0 50% 0); } }
+@keyframes glitch-anim2 { 0% { clip-path: inset(10% 0 60% 0); } 20% { clip-path: inset(30% 0 20% 0); } 40% { clip-path: inset(70% 0 10% 0); } 60% { clip-path: inset(20% 0 50% 0); } 80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); } }
+
+.error-title { font: 800 24px Orbitron; margin-bottom: 15px; color: var(--red); letter-spacing: 2px; }
+.error-text { color: #888; font-size: 14px; max-width: 400px; line-height: 1.8; margin-bottom: 30px; }
+
+/* Animated Emojis */
+.emoji-row { font-size: 40px; margin-bottom: 20px; letter-spacing: 15px; display: flex; justify-content: center; }
+.emoji-row span { display: inline-block; animation: floatEmoji 3s ease-in-out infinite; }
+.emoji-row span:nth-child(1) { animation-delay: 0s; }
+.emoji-row span:nth-child(2) { animation-delay: 0.5s; }
+.emoji-row span:nth-child(3) { animation-delay: 1s; }
+@keyframes floatEmoji { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px) scale(1.1); } }
+
+.btn-home { background: transparent; color: var(--red); border: 2px solid var(--red); text-decoration: none; padding: 15px 35px; border-radius: 8px; font-weight: 900; font-size: 14px; letter-spacing: 1px; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; position: relative; overflow: hidden; z-index: 1; }
+.btn-home::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--red); transition: 0.3s; z-index: -1; }
+.btn-home:hover { color: white; box-shadow: 0 0 30px var(--red-glow); }
+.btn-home:hover::before { left: 0; }
+
+/* NAVBAR */
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; border-bottom: 1px solid #222; background: rgba(5,5,5,0.8); backdrop-filter: blur(10px); position: relative; z-index: 10; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-text { font: 900 18px Orbitron; color: white; }
+.brand-text span { color: var(--red); }
+</style>
+</head>
+<body class="theme-red">
+
+<!-- FIRE ANIMATION LAYER -->
+<div id="fire-layer"></div>
+
+<nav class="navbar">
+    <a href="index.html" class="brand">
+        <div class="brand-text">H4X <span>ALTAF</span></div>
+    </a>
+</nav>
+
+<div class="error-container">
+    <!-- Animated Emojis -->
+    <div class="emoji-row">
+        <span>👻</span>
+        <span>🔥</span>
+        <span>💀</span>
+    </div>
+
+    <!-- 404 Glitch Text -->
+    <div class="glitch-wrapper">
+        <div class="error-code">404</div>
+    </div>
+
+    <h1 class="error-title">PAGE NOT FOUND</h1>
+    <p class="error-text">Bhai, lagta hai tum galat raste par aa gaye ho. Ye page jala kar rakh diya gaya hai ya iska wajood hi nahi hai. Wapas safe jagah chalo!</p>
+    
+    <a href="index.html" class="btn-home">← BACK TO HOME</a>
+</div>
+
+<script>
+    // Fire Animation Logic
+    (function(){
+        const layer = document.getElementById("fire-layer");
+        const maxFlames = window.innerWidth < 600 ? 40 : 80;
+
+        function createFlame() {
+            if(layer.childElementCount > maxFlames) return;
+            
+            const flame = document.createElement("div");
+            flame.className = "fire";
+            
+            // Randomly pick bottom, left, or right edge (top excluded for better look)
+            const edges = ["bottom", "left", "right"];
+            const edge = edges[Math.floor(Math.random() * edges.length)];
+            flame.classList.add(edge);
+
+            const size = Math.random() * 20 + 15; // Bigger flames
+            const duration = Math.random() * 2 + 1.5;
+            const delay = Math.random() * 2;
+
+            if (edge === "bottom") {
+                flame.style.width = size + "px"; 
+                flame.style.height = (size * 2) + "px"; 
+                flame.style.left = (Math.random() * 100) + "vw";
+            } else if (edge === "left") {
+                flame.style.width = (size * 2) + "px"; 
+                flame.style.height = size + "px"; 
+                flame.style.top = (Math.random() * 100) + "vh";
+            } else {
+                flame.style.width = (size * 2) + "px"; 
+                flame.style.height = size + "px"; 
+                flame.style.top = (Math.random() * 100) + "vh";
+            }
+            
+            flame.style.animationDuration = duration + "s"; 
+            flame.style.animationDelay = delay + "s";
+            
+            layer.appendChild(flame);
+            setTimeout(() => flame.remove(), (duration + delay) * 1000 + 500);
+        }
+
+        for(let i=0; i<maxFlames; i++) { createFlame(); }
+        setInterval(() => { if(!document.hidden) createFlame(); }, 100); // Fast spawn
+    })();
+</script>
+
+</body>
+</html>
