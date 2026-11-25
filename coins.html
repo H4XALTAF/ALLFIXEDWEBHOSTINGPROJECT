@@ -51,6 +51,18 @@ body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-heigh
 .balance-card .coin-icon { font-size: 40px; }
 .balance-card p { color: #888; font-size: 12px; margin-top: 15px; }
 
+/* REDEEM BOX */
+.redeem-box { background: rgba(18,12,12,0.85); border: 1px solid #22c55e; border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: 0 0 15px rgba(34,197,94,0.2); }
+.redeem-box h3 { font-size: 16px; margin-bottom: 15px; color: #22c55e; font-family: Orbitron; }
+.redeem-input-group { display: flex; gap: 10px; }
+.redeem-input-group input { flex: 1; padding: 15px; background: #000; border: 1px solid #444; border-radius: 8px; color: white; font-family: monospace; letter-spacing: 2px; outline: none; text-transform: uppercase; }
+.redeem-input-group input:focus { border-color: #22c55e; }
+.redeem-btn { padding: 0 25px; background: #22c55e; color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+.redeem-btn:hover { background: #16a34a; color: white; }
+.msg-box { display:none; margin-top: 15px; padding: 10px; border-radius: 6px; font-size: 12px; text-align: center; }
+.msg-error { display:block; background: rgba(255,0,0,0.1); color: #ff7777; border: 1px solid #792020; }
+.msg-success { display:block; background: rgba(34,197,94,0.1); color: #7dff9c; border: 1px solid #22c55e; }
+
 /* STATS GRID */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
 .stat-box { background: rgba(18,12,12,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
@@ -101,6 +113,19 @@ body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-heigh
             <span id="total-coins">0</span>
         </div>
         <p>Use these coins to host bots and websites.</p>
+    </div>
+
+    <!-- REDEEM CODE BOX -->
+    <div class="redeem-box">
+        <h3>🎟️ Redeem Code</h3>
+        <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Enter the code provided by Admin to get coins.</p>
+        
+        <div class="redeem-input-group">
+            <input type="text" id="redeemCodeInput" placeholder="H4X-XXXX">
+            <button class="redeem-btn" onclick="redeemCode()">REDEEM</button>
+        </div>
+        
+        <div id="redeemMsg" class="msg-box"></div>
     </div>
 
     <!-- Stats -->
@@ -154,7 +179,6 @@ body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-heigh
 
 /* ===== LOAD USER DATA ===== */
 function loadUserData() {
-    // Check if user is logged in
     let user = JSON.parse(localStorage.getItem("h4x_user"));
     if(!user) {
         window.location.href = "index.html";
@@ -165,11 +189,11 @@ function loadUserData() {
     let coins = user.coins || 0;
     document.getElementById("total-coins").innerText = coins;
 
-    // Mock Stats (Demo ke liye)
-    document.getElementById("total-added").innerText = coins + 50; // Maan lo 50 pehle add hue the
-    document.getElementById("total-spent").innerText = 50; // Maan lo 50 kharch hue
+    // Mock Stats
+    document.getElementById("total-added").innerText = coins + 50; 
+    document.getElementById("total-spent").innerText = 50; 
 
-    // Dummy History (Agar real data nahi hai toh)
+    // Dummy History
     let history = [
         { title: "Admin Added Coins", date: "Today, 10:30 AM", amount: "+100" },
         { title: "Bought Starter Plan", date: "Yesterday, 04:15 PM", amount: "-49" },
@@ -194,6 +218,49 @@ function loadUserData() {
                 </div>
             </div>
         `;
+    });
+}
+
+/* ===== REDEEM CODE LOGIC ===== */
+function redeemCode() {
+    let code = document.getElementById("redeemCodeInput").value.trim().toUpperCase();
+    let msg = document.getElementById("redeemMsg");
+    let user = JSON.parse(localStorage.getItem("h4x_user"));
+
+    if(!code) {
+        msg.className = "msg-box msg-error";
+        msg.innerText = "Please enter a code!";
+        return;
+    }
+
+    msg.className = "msg-box";
+    msg.innerText = "Checking code...";
+
+    // 🔥 SERVER KO BHEJO REDEEM KARNE KE LIYE
+    fetch('https://allfixedwebhostingproject.onrender.com/api/redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code, email: user.email })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            msg.className = "msg-box msg-error";
+            msg.innerText = data.error;
+        } else {
+            msg.className = "msg-box msg-success";
+            msg.innerText = `Success! Coins added. New Balance: ${data.coins}`;
+            
+            // Update local storage
+            user.coins = data.coins;
+            localStorage.setItem("h4x_user", JSON.stringify(user));
+            document.getElementById("total-coins").innerText = user.coins;
+            document.getElementById("redeemCodeInput").value = "";
+        }
+    })
+    .catch(err => {
+        msg.className = "msg-box msg-error";
+        msg.innerText = "Server error! Please try again.";
     });
 }
 </script>
