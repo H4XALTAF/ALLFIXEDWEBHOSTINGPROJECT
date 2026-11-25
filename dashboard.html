@@ -258,11 +258,16 @@ body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-heigh
     <a href="dashboard.html" class="nav-item active"><span class="nav-icon">⌂</span> Dashboard</a>
     <a href="my-hosting.html" class="nav-item"><span class="nav-icon">▣</span> My Hosting</a>
     <a href="upload.html" class="nav-item"><span class="nav-icon">⇧</span> Upload Service</a>
-    <a href="buy-hosting.html" class="nav-item"><span class="nav-icon">◈</span> Buy Hosting</a>
+    <!-- FIXED LINK: buy-hosting.html -> pricing.html -->
+    <a href="pricing.html" class="nav-item"><span class="nav-icon">◈</span> Buy Hosting</a>
+    
     <div class="menu-title">MY ACCOUNT</div>
-    <a href="balance.html" class="nav-item"><span class="nav-icon">₹</span> My Balance</a>
-    <a href="history.html" class="nav-item"><span class="nav-icon">◷</span> Transaction History</a>
+    <!-- FIXED LINK: balance.html -> coins.html -->
+    <a href="coins.html" class="nav-item"><span class="nav-icon">₹</span> My Balance</a>
+    <!-- Yahan history.html tha jo nahi bani, isliye coins.html kar diya -->
+    <a href="coins.html" class="nav-item"><span class="nav-icon">◷</span> Transaction History</a>
     <a href="profile.html" class="nav-item"><span class="nav-icon">♙</span> My Profile</a>
+    
     <div class="sidebar-bottom">
         <b>⚡ H4X PREMIUM</b>
         <p>Powerful hosting for your bots, websites and applications.</p>
@@ -301,7 +306,8 @@ body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-heigh
             <div class="banner-tag">✦ PREMIUM HOSTING PLATFORM</div>
             <h2>WELCOME TO H4X ALTAF</h2>
             <p>Your all-in-one hosting platform. Host Telegram bots, Python applications, HTML websites and more.</p>
-            <button class="primary-btn" onclick="location.href='buy-hosting.html'">EXPLORE HOSTING &nbsp; →</button>
+            <!-- FIXED LINK: buy-hosting.html -> pricing.html -->
+            <button class="primary-btn" onclick="location.href='pricing.html'">EXPLORE HOSTING &nbsp; →</button>
         </div>
     </section>
 
@@ -347,13 +353,15 @@ body{ background:var(--bg); color:white; font-family:Inter,sans-serif; min-heigh
                 <div class="empty-icon">▣</div>
                 <h3>No Hosting Services Yet</h3>
                 <p>You haven't purchased any hosting service. Start hosting your applications today.</p>
-                <button class="upload-btn" onclick="location.href='buy-hosting.html'">+ BUY HOSTING</button>
+                <!-- FIXED LINK: buy-hosting.html -> pricing.html -->
+                <button class="upload-btn" onclick="location.href='pricing.html'">+ BUY HOSTING</button>
             </div>
         </div>
         <div class="panel">
             <div class="panel-header">
                 <h3>Recent Activity</h3>
-                <button class="view-all" onclick="location.href='history.html'">HISTORY →</button>
+                <!-- FIXED LINK: history.html -> coins.html -->
+                <button class="view-all" onclick="location.href='coins.html'">HISTORY →</button>
             </div>
             <div class="activity-item">
                 <div class="activity-icon">◈</div>
