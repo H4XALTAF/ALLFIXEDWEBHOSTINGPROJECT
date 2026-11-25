@@ -219,7 +219,9 @@ body { display: flex; overflow: hidden; }
                 <thead>
                     <tr><th>Name</th><th>Email</th><th>Coins</th><th>Status</th></tr>
                 </thead>
-                <tbody id="usersTableBody"></tbody>
+                <tbody id="usersTableBody">
+                    <tr><td colspan="4" style="text-align:center;">Loading users...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -253,7 +255,9 @@ body { display: flex; overflow: hidden; }
                 <button onclick="generateAdminCode()">Generate Code</button>
             </div>
             <h3 style="font-size:14px; margin:20px 0 10px; color:#ccc;">Active Codes</h3>
-            <div class="generated-codes" id="codeListContainer"></div>
+            <div class="generated-codes" id="codeListContainer">
+                <p style='color:#666; font-size:13px;'>Loading codes...</p>
+            </div>
         </div>
     </div>
 
@@ -342,6 +346,7 @@ body { display: flex; overflow: hidden; }
 
         if (window.innerWidth <= 900) toggleAdminMenu();
 
+        if(tabId === 'users') loadAdminUsers();
         if(tabId === 'codes') loadAdminCodes();
         if(tabId === 'content') loadWebsiteContent();
     }
@@ -356,74 +361,110 @@ body { display: flex; overflow: hidden; }
     });
 
     function loadAdminStats() {
-        let user = JSON.parse(localStorage.getItem("h4x_user"));
-        document.getElementById("stat-total-users").innerText = user ? "1" : "0";
-        document.getElementById("stat-total-coins").innerText = user && user.coins ? user.coins : 0;
-        document.getElementById("stat-active-files").innerText = "2";
-        document.getElementById("stat-total-revenue").innerText = "₹" + ((user && user.coins ? user.coins : 0) * 2);
+        // Stats update logic
+        document.getElementById("stat-total-users").innerText = "1"; // Demo
+        document.getElementById("stat-total-coins").innerText = "0";
+        document.getElementById("stat-active-files").innerText = "0";
+        document.getElementById("stat-total-revenue").innerText = "₹0";
     }
 
     function loadAdminUsers() {
         let tbody = document.getElementById("usersTableBody");
-        let user = JSON.parse(localStorage.getItem("h4x_user"));
-        if(!user) {
-            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#666;'>No users found.</td></tr>";
-            return;
-        }
-        tbody.innerHTML = `
-            <tr>
-                <td>${user.name}</td>
-                <td>${user.email}</td>
-                <td style="color:#22c55e; font-weight:bold;">${user.coins}</td>
-                <td><span class="badge active">Active</span></td>
-            </tr>
-        `;
+        tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Loading...</td></tr>";
+
+        // 🔥 SERVER SE ASLI USERS LAO
+        fetch('https://allfixedwebhostingproject.onrender.com/api/admin/all-users')
+        .then(res => res.json())
+        .then(users => {
+            tbody.innerHTML = "";
+            if(users.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:#666;'>No users found.</td></tr>";
+                return;
+            }
+            users.forEach(user => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td style="color:#22c55e; font-weight:bold;">${user.coins}</td>
+                        <td><span class="badge active">Active</span></td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(err => {
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Error loading users.</td></tr>";
+        });
     }
 
     // ==========================================
-    // 4. REDEEM CODE GENERATOR
+    // 4. REDEEM CODE GENERATOR (SERVER CONNECTED)
     // ==========================================
     function generateAdminCode() {
         let amount = document.getElementById("codeAmount").value;
         if(!amount || amount <= 0) { alert("Enter valid amount"); return; }
 
-        let code = "H4X-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-        let codes = JSON.parse(localStorage.getItem("h4x_redeem_codes")) || {};
-        
-        codes[code] = { amount: parseInt(amount), used: false };
-        localStorage.setItem("h4x_redeem_codes", JSON.stringify(codes));
-        
-        document.getElementById("codeAmount").value = "";
-        loadAdminCodes();
-        alert("Success! Code Generated: " + code);
+        let btn = document.querySelector(".code-gen-box button");
+        btn.innerText = "Generating...";
+        btn.disabled = true;
+
+        // 🔥 SERVER PAR CODE BANAO
+        fetch('https://allfixedwebhostingproject.onrender.com/api/admin/generate-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: amount })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("codeAmount").value = "";
+            btn.innerText = "Generate Code";
+            btn.disabled = false;
+            
+            alert("Success! Code Generated: " + data.code);
+            loadAdminCodes(); // List refresh karo
+        })
+        .catch(err => {
+            alert("Error generating code");
+            btn.innerText = "Generate Code";
+            btn.disabled = false;
+        });
     }
 
     function loadAdminCodes() {
         let container = document.getElementById("codeListContainer");
-        let codes = JSON.parse(localStorage.getItem("h4x_redeem_codes")) || {};
-        
-        if(Object.keys(codes).length === 0) {
-            container.innerHTML = "<p style='color:#666; font-size:13px;'>No codes generated yet.</p>";
-            return;
-        }
+        container.innerHTML = "<p style='color:#666; font-size:13px;'>Loading codes...</p>";
 
-        container.innerHTML = "";
-        for(let code in codes) {
-            let data = codes[code];
-            let color = data.used ? "#ff5555" : "#22c55e";
-            container.innerHTML += `
-                <div class="code-item">
-                    <div>
-                        <span>${code}</span>
-                        <div style="font-size:10px; color:#888; margin-top:5px;">${data.amount} Coins - <b style="color:${color}">${data.used ? 'USED' : 'ACTIVE'}</b></div>
+        // 🔥 SERVER SE ASLI CODES LAO
+        fetch('https://allfixedwebhostingproject.onrender.com/api/admin/all-codes')
+        .then(res => res.json())
+        .then(codes => {
+            if(codes.length === 0) {
+                container.innerHTML = "<p style='color:#666; font-size:13px;'>No codes generated yet.</p>";
+                return;
+            }
+
+            container.innerHTML = "";
+            codes.forEach(data => {
+                let color = data.used ? "#ff5555" : "#22c55e";
+                let status = data.used ? "USED" : "ACTIVE";
+
+                container.innerHTML += `
+                    <div class="code-item">
+                        <div>
+                            <span>${data.code}</span>
+                            <div style="font-size:10px; color:#888; margin-top:5px;">${data.amount} Coins - <b style="color:${color}">${status}</b></div>
+                        </div>
                     </div>
-                </div>
-            `;
-        }
+                `;
+            });
+        })
+        .catch(err => {
+            container.innerHTML = "<p style='color:red;'>Error loading codes.</p>";
+        });
     }
 
     // ==========================================
-    // 5. WEBSITE CONTENT MANAGEMENT
+    // 5. WEBSITE CONTENT MANAGEMENT (Demo)
     // ==========================================
     function loadWebsiteContent() {
         let config = JSON.parse(localStorage.getItem("h4x_site_config")) || {};
@@ -454,6 +495,8 @@ body { display: flex; overflow: hidden; }
             }
         };
         
+        // Abhi ke liye ye localstorage me save hoga. 
+        // Baad me ise bhi database me bhejenge.
         localStorage.setItem("h4x_site_config", JSON.stringify(config));
         alert("✅ Website content updated successfully!");
     }
