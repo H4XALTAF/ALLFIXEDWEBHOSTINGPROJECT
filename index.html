@@ -165,7 +165,7 @@ musicToggle.onclick = ()=>musicOverlay.classList.add("open");
 document.getElementById("closeMusic").onclick = ()=>musicOverlay.classList.remove("open");
 loadSong(0, false);
 
-/* LOGIN / REGISTER LOGIC */
+/* LOGIN / REGISTER LOGIC (CONNECTED TO DATABASE) */
 function switchTab(tab){
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.querySelectorAll('.form-section').forEach(f=>f.classList.remove('active'));
@@ -179,24 +179,69 @@ document.getElementById("registerForm").onsubmit = function(e){
     let name = document.getElementById("regName").value;
     let email = document.getElementById("regEmail").value;
     let pass = document.getElementById("regPassword").value;
-    localStorage.setItem("h4x_user", JSON.stringify({name, email, pass, coins: 0}));
-    document.getElementById("message").className = "msg success";
-    document.getElementById("message").innerText = "Account created! Redirecting to login...";
-    setTimeout(()=>switchTab('login'), 1500);
+    let msg = document.getElementById("message");
+
+    msg.className = "msg success";
+    msg.innerText = "Creating account...";
+
+    // SERVER KO DATA BHEJO
+    fetch('https://allfixedwebhostingproject.onrender.com/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, password: pass })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            msg.className = "msg error";
+            msg.innerText = data.error;
+        } else {
+            msg.className = "msg success";
+            msg.innerText = "Account created successfully! Please login.";
+            setTimeout(()=>switchTab('login'), 1500);
+        }
+    })
+    .catch(err => {
+        msg.className = "msg error";
+        msg.innerText = "Server error! Please try again.";
+    });
 };
 
 document.getElementById("loginForm").onsubmit = function(e){
     e.preventDefault();
     let email = document.getElementById("loginEmail").value;
     let pass = document.getElementById("loginPassword").value;
-    let user = JSON.parse(localStorage.getItem("h4x_user"));
-    if(user && user.email === email && user.pass === pass){
-        localStorage.setItem("h4x_logged_in", "true");
-        window.location.href = "dashboard.html";
-    } else {
-        document.getElementById("message").className = "msg error";
-        document.getElementById("message").innerText = "Invalid email or password!";
-    }
+    let msg = document.getElementById("message");
+
+    msg.className = "msg success";
+    msg.innerText = "Logging in...";
+
+    // SERVER SE CHECK KARO
+    fetch('https://allfixedwebhostingproject.onrender.com/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: pass })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            msg.className = "msg error";
+            msg.innerText = data.error;
+        } else {
+            msg.className = "msg success";
+            msg.innerText = "Login successful! Redirecting...";
+            
+            // Asli user data save karo
+            localStorage.setItem("h4x_logged_in", "true");
+            localStorage.setItem("h4x_user", JSON.stringify(data.user));
+            
+            setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+        }
+    })
+    .catch(err => {
+        msg.className = "msg error";
+        msg.innerText = "Server error! Please try again.";
+    });
 };
 </script>
 </body>
