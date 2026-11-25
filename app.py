@@ -25,13 +25,12 @@ files_collection = db.hosted_files
 os.makedirs("uploads", exist_ok=True)
 
 # ==========================================
-# 2. WEBSITE PAGES & STATIC FILES (FIXED ROUTING)
+# 2. WEBSITE PAGES & STATIC FILES
 # ==========================================
 @app.route('/')
 def home():
     return send_from_directory('.', 'index.html')
 
-# Ye ek hi route saari HTML, CSS, JS files ko serve karega
 @app.route('/<path:path>')
 def serve_static(path):
     if os.path.exists(path):
@@ -44,7 +43,7 @@ def serve_static(path):
         return "404 Not Found", 404
 
 # ==========================================
-# 3. AUTHENTICATION APIs (Login/Signup)
+# 3. AUTHENTICATION APIs
 # ==========================================
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -91,6 +90,18 @@ def upload_file():
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
+    # 🔥 COINS CHECK SYSTEM
+    user = users_collection.find_one({"email": email})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.get('coins', 0) < 10:
+        return jsonify({"error": "Not enough coins! You need at least 10 coins to host a file."}), 400
+
+    # 10 Coins deduct karo
+    users_collection.update_one({"email": email}, {"$inc": {"coins": -10}})
+
+    # File save karo
     filepath = os.path.join("uploads", file.filename)
     file.save(filepath)
 
@@ -98,7 +109,7 @@ def upload_file():
         "filename": file.filename, "owner": email, "status": "running", "path": filepath
     })
     
-    return jsonify({"message": f"{file.filename} hosted successfully!"}), 200
+    return jsonify({"message": f"{file.filename} hosted successfully! 10 coins deducted."}), 200
 
 @app.route('/api/my-files', methods=['GET'])
 def get_my_files():
