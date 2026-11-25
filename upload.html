@@ -88,7 +88,7 @@
     <div class="page-header">
         <div>
             <h1>Upload <span>Service</span></h1>
-            <p>Host your Python bots, scripts, or ZIP files instantly.</p>
+            <p>Host your Python bots, scripts, or ZIP files instantly. (Cost: 10 Coins)</p>
         </div>
     </div>
 
@@ -114,7 +114,7 @@
     <!-- HOSTED FILES LIST -->
     <h3 style="font: 800 16px Orbitron; margin-top: 30px; margin-bottom: 15px;">Active Hostings</h3>
     <div class="file-list" id="fileList">
-        <!-- Demo File Item (Jab tak user koi file upload nahi karta) -->
+        <!-- Demo File Item -->
         <div class="file-item" id="demoFile">
             <div class="file-info">
                 <div class="file-icon">🐍</div>
@@ -139,7 +139,6 @@
             <div style="width:40px;"></div>
         </div>
         <div class="console-body" id="consoleBody">
-            <!-- Logs will appear here -->
             <div>> Server connected successfully.</div>
             <div>> Waiting for files to host...</div>
         </div>
@@ -157,6 +156,10 @@
     const progressFileName = document.getElementById('progressFileName');
     const fileList = document.getElementById('fileList');
     const consoleBody = document.getElementById('consoleBody');
+
+    // Current User ka data nikaalo
+    let currentUser = JSON.parse(localStorage.getItem("h4x_user"));
+    if(!currentUser) { window.location.href = "index.html"; }
 
     // Click to upload
     dropZone.addEventListener('click', () => fileInput.click());
@@ -188,14 +191,14 @@
         div.style.color = color;
         div.innerText = "> " + text;
         consoleBody.appendChild(div);
-        consoleBody.scrollTop = consoleBody.scrollHeight; // Auto scroll to bottom
+        consoleBody.scrollTop = consoleBody.scrollHeight;
     }
 
-    // Fake Upload Simulation
+    // 🔥 REAL UPLOAD FUNCTION
     function handleFileUpload(file) {
-        // Check size (50MB max demo)
         if(file.size > 50 * 1024 * 1024) {
             alert("File is too large! Max size is 50MB.");
+            addLog(`Error: File too large. Max 50MB allowed.`, "#ff5555");
             return;
         }
 
@@ -204,41 +207,72 @@
         progressFileName.innerText = file.name;
         progressBar.style.width = '0%';
         progressPercent.innerText = '0%';
-
         addLog(`Starting upload for: ${file.name}`, "#fff");
 
+        // Fake progress animation
         let progress = 0;
         let interval = setInterval(() => {
-            progress += Math.random() * 15; // Random speed
-            if(progress > 100) progress = 100;
-
+            progress += Math.random() * 15;
+            if(progress > 90) progress = 90;
             progressBar.style.width = progress + '%';
             progressPercent.innerText = Math.floor(progress) + '%';
+        }, 200);
 
-            if(progress === 100) {
-                clearInterval(interval);
+        // 🔥 SERVER KO BHEJO
+        let formData = new FormData();
+        formData.append('file', file);
+        formData.append('email', currentUser.email);
+
+        fetch('https://allfixedwebhostingproject.onrender.com/api/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            clearInterval(interval);
+            
+            if(data.error) {
+                // Error (jaise coins kam hai)
+                progressBar.style.width = '0%';
+                progressPercent.innerText = '0%';
+                progressBox.style.display = 'none';
+                addLog(`Error: ${data.error}`, "#ff5555");
+                alert(data.error);
+            } else {
+                // Success
+                progressBar.style.width = '100%';
+                progressPercent.innerText = '100%';
+                
                 setTimeout(() => {
                     progressBox.style.display = 'none';
                     addLog(`Upload complete: ${file.name}`, "#22c55e");
                     addLog(`Compiling and starting process...`, "#eab308");
                     
                     setTimeout(() => {
-                        addLog(`Success! Hosting started. Process ID: #${Math.floor(Math.random()*9000)+1000}`, "#22c55e");
+                        addLog(`Success! Hosting started. 10 Coins deducted.`, "#22c55e");
+                        
+                        // Coins update karo local storage me
+                        currentUser.coins = currentUser.coins - 10;
+                        localStorage.setItem("h4x_user", JSON.stringify(currentUser));
+
                         addNewFileToList(file.name, (file.size / 1024).toFixed(1) + " KB");
-                    }, 1500);
+                    }, 1000);
 
                 }, 500);
             }
-        }, 200);
+        })
+        .catch(err => {
+            clearInterval(interval);
+            progressBox.style.display = 'none';
+            addLog(`Server error! Please try again.`, "#ff5555");
+        });
     }
 
     // Add new file to active list
     function addNewFileToList(fileName, fileSize) {
-        // Remove demo file if it exists
         const demo = document.getElementById('demoFile');
         if(demo) demo.remove();
 
-        // Get file extension
         let ext = fileName.split('.').pop().toLowerCase();
         let icon = ext === 'py' ? '🐍' : ext === 'zip' ? '📦' : '📄';
 
@@ -258,7 +292,6 @@
             </div>
         `;
 
-        // Stop button logic
         div.querySelector('.stop-btn').addEventListener('click', function() {
             let badge = div.querySelector('.status-badge');
             if(badge.innerText.includes("Running")) {
