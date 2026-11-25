@@ -361,7 +361,6 @@ body { display: flex; overflow: hidden; }
     });
 
     function loadAdminStats() {
-        // Stats update logic
         document.getElementById("stat-total-users").innerText = "1"; // Demo
         document.getElementById("stat-total-coins").innerText = "0";
         document.getElementById("stat-active-files").innerText = "0";
@@ -464,9 +463,10 @@ body { display: flex; overflow: hidden; }
     }
 
     // ==========================================
-    // 5. WEBSITE CONTENT MANAGEMENT (Demo)
+    // 5. WEBSITE CONTENT MANAGEMENT (FIREBASE CONNECTED)
     // ==========================================
     function loadWebsiteContent() {
+        // पहले लोकल स्टोरेज से लोड करो (अगर है तो)
         let config = JSON.parse(localStorage.getItem("h4x_site_config")) || {};
         
         if(config.prices) {
@@ -481,7 +481,12 @@ body { display: flex; overflow: hidden; }
         }
     }
 
-    function saveWebsiteContent() {
+    async function saveWebsiteContent() {
+        let btn = document.querySelector('.save-btn');
+        let oldText = btn.innerText;
+        btn.innerText = "Saving...";
+        btn.disabled = true;
+
         let config = {
             prices: {
                 starter: document.getElementById("price-starter").value,
@@ -495,11 +500,44 @@ body { display: flex; overflow: hidden; }
             }
         };
         
-        // Abhi ke liye ye localstorage me save hoga. 
-        // Baad me ise bhi database me bhejenge.
-        localStorage.setItem("h4x_site_config", JSON.stringify(config));
-        alert("✅ Website content updated successfully!");
+        try {
+            // 🔥 Firebase Realtime Database में सेव करो
+            await window.firebaseSet(window.firebaseRef(window.firebaseDB, "website_settings"), config);
+            
+            // लोकल स्टोरेज में भी सेव कर लो बैकअप के लिए
+            localStorage.setItem("h4x_site_config", JSON.stringify(config));
+            
+            alert("✅ Website Content Updated Successfully on Cloud!");
+            btn.innerText = oldText;
+            btn.disabled = false;
+        } catch (e) {
+            console.error("Error writing document: ", e);
+            alert("❌ Error saving data! Check Console.");
+            btn.innerText = oldText;
+            btn.disabled = false;
+        }
     }
 </script>
+
+<!-- FIREBASE SDK SCRIPT (Must be at the end) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  // 🔥 तुम्हारा Firebase लिंक
+  const firebaseConfig = {
+    databaseURL: "https://h4xaltafsetting-default-rtdb.firebaseio.com/"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  
+  // इसे ग्लोबल बनाओ ताकि नीचे वाले स्क्रिप्ट में यूज़ कर सकें
+  window.firebaseDB = db;
+  window.firebaseRef = ref;
+  window.firebaseSet = set;
+  window.firebaseGet = get;
+</script>
+
 </body>
 </html>
