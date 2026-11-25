@@ -1,12 +1,14 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from pymongo import MongoClient
 import os
-import subprocess
 import random
 import string
 
-app = Flask(__name__, static_folder='.', template_folder='.')
+# ==========================================
+# FLASK APP SETUP
+# ==========================================
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 # ==========================================
@@ -23,22 +25,23 @@ files_collection = db.hosted_files
 os.makedirs("uploads", exist_ok=True)
 
 # ==========================================
-# 2. WEBSITE PAGES (HTML FILES) ROUTES
+# 2. WEBSITE PAGES & STATIC FILES (FIXED ROUTING)
 # ==========================================
-# Jab koi website kholega, toh index.html khulega
 @app.route('/')
 def home():
     return send_from_directory('.', 'index.html')
 
-# Baaki saare HTML pages ko serve karne ke liye
-@app.route('/<page>.html')
-def serve_html(page):
-    return send_from_directory('.', f'{page}.html')
-
-# CSS, JS aur images ke liye
+# Ye ek hi route saari HTML, CSS, JS files ko serve karega
 @app.route('/<path:path>')
 def serve_static(path):
-    return send_from_directory('.', path)
+    if os.path.exists(path):
+        return send_from_directory('.', path)
+    elif os.path.exists(path + '.html'):
+        return send_from_directory('.', path + '.html')
+    else:
+        if os.path.exists('404.html'):
+            return send_from_directory('.', '404.html'), 404
+        return "404 Not Found", 404
 
 # ==========================================
 # 3. AUTHENTICATION APIs (Login/Signup)
@@ -83,23 +86,18 @@ def upload_file():
         return jsonify({"error": "No file part"}), 400
     
     file = request.files['file']
-    email = request.form.get('email') # Kis user ne upload kiya
+    email = request.form.get('email') 
     
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
-    # File save karo server par
     filepath = os.path.join("uploads", file.filename)
     file.save(filepath)
 
-    # Database me save karo ki kisne upload kiya
     files_collection.insert_one({
         "filename": file.filename, "owner": email, "status": "running", "path": filepath
     })
     
-    # Yaha asli Python bot run karne ka logic aayega (subprocess.Popen)
-    # subprocess.Popen(["python", filepath]) 
-
     return jsonify({"message": f"{file.filename} hosted successfully!"}), 200
 
 @app.route('/api/my-files', methods=['GET'])
@@ -116,7 +114,6 @@ def toggle_file():
     new_status = "stopped" if current_status == "running" else "running"
     
     files_collection.update_one({"filename": filename}, {"$set": {"status": new_status}})
-    # Yaha process kill/start karne ka logic aayega
     return jsonify({"message": f"File {new_status}"}), 200
 
 # ==========================================
@@ -132,9 +129,7 @@ def redeem_code():
     if not code_data:
         return jsonify({"error": "Invalid or already used code"}), 400
 
-    # Mark code as used
     codes_collection.update_one({"code": code}, {"$set": {"used": True}})
-    # Add coins to user
     users_collection.update_one({"email": email}, {"$inc": {"coins": code_data["amount"]}})
     
     updated_user = users_collection.find_one({"email": email})
@@ -151,7 +146,6 @@ def admin_get_users():
 @app.route('/api/admin/generate-code', methods=['POST'])
 def admin_generate_code():
     data = request.json
-    # Random code generate karo (e.g., H4X-8A9B)
     random_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     code = f"H4X-{random_str}"
     
@@ -163,15 +157,9 @@ def admin_get_codes():
     codes = list(codes_collection.find({}, {"_id": 0}))
     return jsonify(codes), 200
 
-@app.route('/api/admin/settings', methods=['POST'])
-def admin_settings():
-    # Website settings update logic (Pricing/Contact)
-    return jsonify({"message": "Settings updated"}), 200
-
-
 # ==========================================
 # START SERVER
 # ==========================================
 if __name__ == '__main__':
-    print("H4X ALTAF Server Started on Port 5000...")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
